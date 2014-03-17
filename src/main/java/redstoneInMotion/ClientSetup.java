@@ -1,24 +1,20 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class ClientSetup extends ClientSetupProxy
-{
-	public void RegisterTileEntityRenderer ( TileEntityRenderer Renderer , Class < ? extends TileEntity > ... EntityClasses )
-	{
-		for ( Class < ? extends TileEntity > EntityClass : EntityClasses )
-		{
-			cpw . mods . fml . client . registry . ClientRegistry . bindTileEntitySpecialRenderer ( EntityClass , Renderer ) ;
-		}
-	}
+public class ClientSetup extends ClientSetupProxy {
+    public void RegisterTileEntityRenderer(TileEntityRenderer Renderer, Class<? extends TileEntity>... EntityClasses) {
+        for (Class<? extends TileEntity> EntityClass : EntityClasses) {
+            cpw.mods.fml.client.registry.ClientRegistry.bindTileEntitySpecialRenderer(EntityClass, Renderer);
+        }
+    }
 
-	@Override
-	public void Execute ( )
-	{
-		RegisterTileEntityRenderer ( new MotiveSpectreRenderer ( ) , MotiveSpectreEntity . class ) ;
+    @Override
+    public void Execute() {
+        RegisterTileEntityRenderer(new MotiveSpectreRenderer(), MotiveSpectreEntity.class);
 
-		RegisterTileEntityRenderer ( new TeleportativeSpectreRenderer ( ) , TeleportativeSpectreEntity . class ) ;
+        RegisterTileEntityRenderer(new TeleportativeSpectreRenderer(), TeleportativeSpectreEntity.class);
 
-		new CarriageRenderer ( ) ;
+        new CarriageRenderer();
 
-		new CarriageDriveRenderer ( ) ;
-	}
+        new CarriageDriveRenderer();
+    }
 }

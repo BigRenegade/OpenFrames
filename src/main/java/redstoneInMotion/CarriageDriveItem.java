@@ -1,182 +1,137 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class CarriageDriveItem extends BlockItem
-{
-	public CarriageDriveItem ( int Id )
-	{
-		super ( Id ) ;
-	}
+public class CarriageDriveItem extends BlockItem {
+    public CarriageDriveItem(int Id) {
+        super(Id);
+    }
 
-	public static boolean GetPrivateFlag ( net . minecraft . item . ItemStack Item )
-	{
-		if ( Item . stackTagCompound != null )
-		{
-			return ( Item . stackTagCompound . getBoolean ( "Private" ) ) ;
-		}
+    public static boolean GetPrivateFlag(net.minecraft.item.ItemStack Item) {
+        if (Item.stackTagCompound != null) {
+            return (Item.stackTagCompound.getBoolean("Private"));
+        }
 
-		return ( ( ( Item . itemDamage >>> 4 ) & 0x1 ) == 1 ) ;
-	}
+        return (((Item.getItemDamage() >>> 4) & 0x1) == 1);
+    }
 
-	public static int GetLabel ( net . minecraft . item . ItemStack Item )
-	{
-		if ( Item . stackTagCompound != null )
-		{
-			return ( Item . stackTagCompound . getInteger ( "Label" ) ) ;
-		}
+    public static int GetLabel(net.minecraft.item.ItemStack Item) {
+        if (Item.stackTagCompound != null) {
+            return (Item.stackTagCompound.getInteger("Label"));
+        }
 
-		return ( Item . itemDamage >>> 5 ) ;
-	}
+        return (Item.getItemDamage() >>> 5);
+    }
 
-	public static int GetTier ( net . minecraft . item . ItemStack Item )
-	{
-		if ( Item . stackTagCompound != null )
-		{
-			return ( Item . stackTagCompound . getInteger ( "Tier" ) ) ;
-		}
+    public static int GetTier(net.minecraft.item.ItemStack Item) {
+        if (Item.stackTagCompound != null) {
+            return (Item.stackTagCompound.getInteger("Tier"));
+        }
 
-		return ( 0 ) ;
-	}
+        return (0);
+    }
 
-	public static int AddDyeToLabel ( int Label , Vanilla . DyeTypes DyeType )
-	{
-		return ( Label | ( 1 << DyeType . ordinal ( ) ) ) ;
-	}
+    public static int AddDyeToLabel(int Label, Vanilla.DyeTypes DyeType) {
+        return (Label | (1 << DyeType.ordinal()));
+    }
 
-	public static boolean LabelHasDye ( int Label , Vanilla . DyeTypes DyeType )
-	{
-		return ( ( ( Label >>> DyeType . ordinal ( ) ) & 0x1 ) == 1 ) ;
-	}
+    public static boolean LabelHasDye(int Label, Vanilla.DyeTypes DyeType) {
+        return (((Label >>> DyeType.ordinal()) & 0x1) == 1);
+    }
 
-	public static net . minecraft . item . ItemStack Stack ( int Type , int Tier )
-	{
-		return ( Stack ( Type , Tier , false , 0 ) ) ;
-	}
+    public static net.minecraft.item.ItemStack Stack(int Type, int Tier) {
+        return (Stack(Type, Tier, false, 0));
+    }
 
-	public static net . minecraft . item . ItemStack Stack ( int Type , int Tier , boolean Private , int Label )
-	{
-		net . minecraft . item . ItemStack Item = Stack . Tag ( Stack . New ( Blocks . CarriageDrive , Type ) ) ;
+    public static net.minecraft.item.ItemStack Stack(int Type, int Tier, boolean Private, int Label) {
+        net.minecraft.item.ItemStack Item = Stack.Tag(Stack.New(Blocks.CarriageDrive, Type));
 
-		Item . stackTagCompound . setBoolean ( "Private" , Private ) ;
+        Item.stackTagCompound.setBoolean("Private", Private);
 
-		Item . stackTagCompound . setInteger ( "Label" , Label ) ;
+        Item.stackTagCompound.setInteger("Label", Label);
 
-		Item . stackTagCompound . setInteger ( "Tier" , Tier ) ;
+        Item.stackTagCompound.setInteger("Tier", Tier);
 
-		return ( Item ) ;
-	}
+        return (Item);
+    }
 
-	@Override
-	public String getItemDisplayName ( net . minecraft . item . ItemStack Item )
-	{
-		try
-		{
-			switch ( CarriageDrive . Types . values ( ) [ GetBlockType ( Item ) ] )
-			{
-				case Engine :
+    @Override
+    public String getItemDisplayName(net.minecraft.item.ItemStack Item) {
+        try {
+            switch (CarriageDrive.Types.values()[GetBlockType(Item)]) {
+                case Engine:
+                    return ("Carriage Engine");
 
-					return ( "Carriage Engine" ) ;
+                case Motor:
+                    return ("Carriage Motor");
 
-				case Motor :
+                case Translocator:
+                    return ("Carriage Translocator");
 
-					return ( "Carriage Motor" ) ;
+                case Controller:
+                    return ("Carriage Controller");
+            }
+        } catch (Throwable Throwable) {
+            Throwable.printStackTrace();
+        }
 
-				case Translocator :
+        return ("INVALID CARRIAGE DRIVE");
+    }
 
-					return ( "Carriage Translocator" ) ;
+    @Override
+    public void AddTooltip(net.minecraft.item.ItemStack Item, java.util.List TooltipLines) {
+        int Type = GetBlockType(Item);
 
-				case Controller :
+        if (Configuration.Cosmetic.ShowHelpInTooltips) {
+            try {
+                switch (CarriageDrive.Types.values()[Type]) {
+                    case Engine:
+                        TooltipLines.add("Moves with the carriage");
+                        break;
 
-					return ( "Carriage Controller" ) ;
-			}
-		}
-		catch ( Throwable Throwable )
-		{
-			Throwable . printStackTrace ( ) ;
-		}
+                    case Motor:
+                        TooltipLines.add("Moves the carriage while staying put");
+                        break;
 
-		return ( "INVALID CARRIAGE DRIVE" ) ;
-	}
+                    case Translocator:
+                        TooltipLines.add("Teleports the carriage to a remote position");
+                        break;
 
-	@Override
-	public void AddTooltip ( net . minecraft . item . ItemStack Item , java . util . List TooltipLines )
-	{
-		int Type = GetBlockType ( Item ) ;
+                    case Controller:
+                        TooltipLines.add("Moves according to ComputerCraft control");
+                        break;
+                }
+            } catch (Throwable Throwable) {
+                Throwable.printStackTrace();
 
-		if ( Configuration . Cosmetic . ShowHelpInTooltips )
-		{
-			try
-			{
-				switch ( CarriageDrive . Types . values ( ) [ Type ] )
-				{
-					case Engine :
+                return;
+            }
+        }
 
-						TooltipLines . add ( "Moves with the carriage" ) ;
+        if (Type == CarriageDrive.Types.Translocator.ordinal()) {
+            if (Item.stackTagCompound == null) {
+                TooltipLines.add("ITEM NEEDS CONVERSION TO NEW FORMAT");
 
-						break ;
+                TooltipLines.add("(craft with screwdriver to convert)");
+            }
 
-					case Motor :
+            boolean Private = GetPrivateFlag(Item);
 
-						TooltipLines . add ( "Moves the carriage while staying put" ) ;
+            int Label = GetLabel(Item);
 
-						break ;
+            if (Private) {
+                TooltipLines.add("Label (private):");
+            } else {
+                TooltipLines.add("Label:");
+            }
 
-					case Translocator :
-
-						TooltipLines . add ( "Teleports the carriage to a remote position" ) ;
-
-						break ;
-
-					case Controller :
-
-						TooltipLines . add ( "Moves according to ComputerCraft control" ) ;
-
-						break ;
-				}
-			}
-			catch ( Throwable Throwable )
-			{
-				Throwable . printStackTrace ( ) ;
-
-				return ;
-			}
-		}
-
-		if ( Type == CarriageDrive . Types . Translocator . ordinal ( ) )
-		{
-			if ( Item . stackTagCompound == null )
-			{
-				TooltipLines . add ( "ITEM NEEDS CONVERSION TO NEW FORMAT" ) ;
-
-				TooltipLines . add ( "(craft with screwdriver to convert)" ) ;
-			}
-
-			boolean Private = GetPrivateFlag ( Item ) ;
-
-			int Label = GetLabel ( Item ) ;
-
-			if ( Private )
-			{
-				TooltipLines . add ( "Label (private):" ) ;
-			}
-			else
-			{
-				TooltipLines . add ( "Label:" ) ;
-			}
-
-			if ( Label == 0 )
-			{
-				TooltipLines . add ( "<blank>" ) ;
-			}
-			else
-			{
-				for ( Vanilla . DyeTypes DyeType : Vanilla . DyeTypes . values ( ) )
-				{
-					if ( LabelHasDye ( Label , DyeType ) )
-					{
-						TooltipLines . add ( " - " + DyeType . name ( ) ) ;
-					}
-				}
-			}
-		}
-	}
+            if (Label == 0) {
+                TooltipLines.add("<blank>");
+            } else {
+                for (Vanilla.DyeTypes DyeType : Vanilla.DyeTypes.values()) {
+                    if (LabelHasDye(Label, DyeType)) {
+                        TooltipLines.add(" - " + DyeType.name());
+                    }
+                }
+            }
+        }
+    }
 }

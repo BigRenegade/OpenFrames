@@ -1,129 +1,118 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class TileEntity extends net . minecraft . tileentity . TileEntity
-{
-	public void WriteCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-	}
+import net.minecraft.entity.item.EntityItem;
 
-	public void WriteServerRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-	}
+public abstract class TileEntity extends net.minecraft.tileentity.TileEntity {
+    public void WriteCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+    }
 
-	public void WriteClientRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-	}
+    public void WriteServerRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+    }
 
-	@Override
-	public void writeToNBT ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		super . writeToNBT ( TagCompound ) ;
+    public void WriteClientRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+    }
 
-		WriteCommonRecord ( TagCompound ) ;
+    @Override
+    public void writeToNBT(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        super.writeToNBT(TagCompound);
 
-		WriteServerRecord ( TagCompound ) ;
-	}
+        WriteCommonRecord(TagCompound);
 
-	@Override
-	public net . minecraft . network . packet . Packet132TileEntityData getDescriptionPacket ( )
-	{
-		net . minecraft . network . packet . Packet132TileEntityData Packet = new net . minecraft . network . packet . Packet132TileEntityData ( xCoord , yCoord , zCoord , 0 , new net . minecraft . nbt . NBTTagCompound ( ) ) ;
+        WriteServerRecord(TagCompound);
+    }
 
-		WriteCommonRecord ( Packet . data ) ;
+    @Override
+    public net.minecraft.network.packet.Packet132TileEntityData getDescriptionPacket() {
+        net.minecraft.network.packet.Packet132TileEntityData Packet = new net.minecraft.network.packet.Packet132TileEntityData(xCoord, yCoord, zCoord, 0, new net.minecraft.nbt.NBTTagCompound());
 
-		WriteClientRecord ( Packet . data ) ;
+        WriteCommonRecord(Packet.data);
 
-		return ( Packet ) ;
-	}
+        WriteClientRecord(Packet.data);
 
-	public void ReadCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-	}
+        return (Packet);
+    }
 
-	public void ReadServerRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-	}
+    public void ReadCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+    }
 
-	public void ReadClientRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-	}
+    public void ReadServerRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+    }
 
-	@Override
-	public void readFromNBT ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		super . readFromNBT ( TagCompound ) ;
+    public void ReadClientRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+    }
 
-		ReadCommonRecord ( TagCompound ) ;
+    @Override
+    public void readFromNBT(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        super.readFromNBT(TagCompound);
 
-		ReadServerRecord ( TagCompound ) ;
-	}
+        ReadCommonRecord(TagCompound);
 
-	@Override
-	public void onDataPacket ( net . minecraft . network . INetworkManager NetworkManager , net . minecraft . network . packet . Packet132TileEntityData Packet )
-	{
-		ReadCommonRecord ( Packet . data ) ;
+        ReadServerRecord(TagCompound);
+    }
 
-		ReadClientRecord ( Packet . data ) ;
+    @Override
+    public void onDataPacket(net.minecraft.network.INetworkManager NetworkManager, net.minecraft.network.packet.Packet132TileEntityData Packet) {
+        ReadCommonRecord(Packet.data);
 
-		MarkRenderRecordDirty ( ) ;
-	}
+        ReadClientRecord(Packet.data);
 
-	public void MarkServerRecordDirty ( )
-	{
-		worldObj . getChunkFromBlockCoords ( xCoord , zCoord ) . setChunkModified ( ) ;
-	}
+        MarkRenderRecordDirty();
+    }
 
-	public void MarkClientRecordDirty ( )
-	{
-		worldObj . markBlockForUpdate ( xCoord , yCoord , zCoord ) ;
-	}
+    public void MarkServerRecordDirty() {
+        worldObj.getChunkFromBlockCoords(xCoord, zCoord).setChunkModified();
+    }
 
-	public void Propagate ( )
-	{
-		MarkServerRecordDirty ( ) ;
+    public void MarkClientRecordDirty() {
+        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+    }
 
-		MarkClientRecordDirty ( ) ;
-	}
+    public void Propagate() {
+        MarkServerRecordDirty();
 
-	public void MarkRenderRecordDirty ( )
-	{
-		worldObj . markBlockForRenderUpdate ( xCoord , yCoord , zCoord ) ;
-	}
+        MarkClientRecordDirty();
+    }
 
-	public void Initialize ( )
-	{
-	}
+    public void MarkRenderRecordDirty() {
+        worldObj.markBlockForRenderUpdate(xCoord, yCoord, zCoord);
+    }
 
-	@Override
-	public void validate ( )
-	{
-		super . validate ( ) ;
+    public void Initialize() {
+    }
 
-		Initialize ( ) ;
-	}
+    @Override
+    public void validate() {
+        super.validate();
 
-	public void Finalize ( )
-	{
-	}
+        Initialize();
+    }
 
-	@Override
-	public void invalidate ( )
-	{
-		Finalize ( ) ;
+    public void Finalize() {
+    }
 
-		super . invalidate ( ) ;
-	}
+    @Override
+    public void invalidate() {
+        Finalize();
 
-	public void Setup ( net . minecraft . entity . player . EntityPlayer Player , net . minecraft . item . ItemStack Item )
-	{
-	}
+        super.invalidate();
+    }
 
-	public void EmitDrops ( Block Block , int Meta )
-	{
-	}
+    public void Setup(net.minecraft.entity.player.EntityPlayer Player, net.minecraft.item.ItemStack Item) {
+    }
 
-	public void EmitDrop ( Block Block , net . minecraft . item . ItemStack Drop )
-	{
-		Block . dropBlockAsItem_do ( worldObj , xCoord , yCoord , zCoord , Drop ) ;
-	}
+    public void EmitDrops(Block Block, int Meta) {
+    }
+
+    public void EmitDrop(Block Block, net.minecraft.item.ItemStack Drop) {
+//      Block.dropBlockAsItem_do(worldObj, xCoord, yCoord, zCoord, Drop);
+        if (!worldObj.isRemote && worldObj.getGameRules().getGameRuleBooleanValue("doTileDrops")) {
+            final float f = 0.7F;
+            final double dx = (worldObj.rand.nextFloat() * f) + (1 - f) * 0.5;
+            final double dy = (worldObj.rand.nextFloat() * f) + (1 - f) * 0.5;
+            final double dz = (worldObj.rand.nextFloat() * f) + (1 - f) * 0.5;
+            final EntityItem entityitem = new EntityItem(worldObj, xCoord + dx, yCoord + dy, zCoord + dz, Drop);
+            entityitem.delayBeforeCanPickup = 10;
+            worldObj.spawnEntityInWorld(entityitem);
+        }
+    }
 }

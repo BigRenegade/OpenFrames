@@ -1,42 +1,35 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class MotiveSpectreRenderer extends TileEntityRenderer
-{
-	@Override
-	public void Render ( net . minecraft . tileentity . TileEntity TileEntity , float PartialTick )
-	{
-		MotiveSpectreEntity Spectre = ( MotiveSpectreEntity ) TileEntity ;
+public class MotiveSpectreRenderer extends TileEntityRenderer {
+    @Override
+    public void Render(net.minecraft.tileentity.TileEntity TileEntity, float PartialTick) {
+        MotiveSpectreEntity Spectre = (MotiveSpectreEntity) TileEntity;
 
-		if ( Spectre . RenderCacheKey == null )
-		{
-			return ;
-		}
+        if (Spectre.RenderCacheKey == null) {
+            return;
+        }
 
-		{
-			double Offset ;
-			
-			if ( Configuration . CarriageMotion . RenderInFinalPositionDuringLag && ( Spectre . TicksExisted >= Configuration . CarriageMotion . MotionDuration ) )
-			{
-				Offset = 1 ;
-			}
-			else
-			{
-				Offset = Spectre . Velocity * ( Spectre . TicksExisted + PartialTick ) ;
-			}
+        {
+            double Offset;
 
-			Render . Translate ( Offset * Spectre . MotionDirection . DeltaX - Spectre . xCoord , Offset * Spectre . MotionDirection . DeltaY - Spectre . yCoord ,
-				Offset * Spectre . MotionDirection . DeltaZ - Spectre . zCoord ) ;
-		}
+            if (Configuration.CarriageMotion.RenderInFinalPositionDuringLag && (Spectre.TicksExisted >= Configuration.CarriageMotion.MotionDuration)) {
+                Offset = 1;
+            } else {
+                Offset = Spectre.Velocity * (Spectre.TicksExisted + PartialTick);
+            }
 
-		Integer DisplayList = CarriageRenderCache . Lookup ( Spectre . RenderCacheKey ) ;
+            Render.Translate(Offset * Spectre.MotionDirection.DeltaX - Spectre.xCoord, Offset * Spectre.MotionDirection.DeltaY - Spectre.yCoord,
+                    Offset * Spectre.MotionDirection.DeltaZ - Spectre.zCoord);
+        }
 
-		if ( DisplayList != null )
-		{
-			Render . ResetBoundTexture ( ) ;
+        Integer DisplayList = CarriageRenderCache.Lookup(Spectre.RenderCacheKey);
 
-			Render . ExecuteDisplayList ( DisplayList ) ;
+        if (DisplayList != null) {
+            Render.ResetBoundTexture();
 
-			Render . ResetBoundTexture ( ) ;
-		}
-	}
+            Render.ExecuteDisplayList(DisplayList);
+
+            Render.ResetBoundTexture();
+        }
+    }
 }

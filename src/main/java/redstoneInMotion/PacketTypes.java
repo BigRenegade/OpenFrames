@@ -1,7 +1,6 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public enum PacketTypes
-{
-	Render ,
-	MultipartPropagation ;
+public enum PacketTypes {
+    Render,
+    MultipartPropagation;
 }

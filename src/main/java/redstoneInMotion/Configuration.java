@@ -1,284 +1,263 @@
-package redstoneInMotion ;
-
-public class Configuration extends Config
-{
-	public abstract static class BlockIds
-	{
-		public static int Carriage ;
-
-		public static int CarriageDrive ;
-
-		public static int Spectre ;
-	}
+package redstoneInMotion;
 
-	public abstract static class Carriage
-	{
-		public static int MaxPlatformBurden = 5000 ;
+public class Configuration extends Config {
+    public abstract static class BlockIds {
+        public static int Carriage;
 
-		public static int MaxSupportBurden = 5000 ;
+        public static int CarriageDrive;
 
-		public static boolean BlacklistBedrock = true ;
+        public static int Spectre;
+    }
 
-		public static boolean BlacklistByPiston = false ;
-	}
+    public abstract static class Carriage {
+        public static int MaxPlatformBurden = 5000;
 
-	public abstract static class CarriageDrive
-	{
-		public static int ContinuousCooldown = 5 ;
-	}
+        public static int MaxSupportBurden = 5000;
 
-	public abstract static class CarriageMotion
-	{
-		public static boolean CapturePlayerEntities = true ;
+        public static boolean BlacklistBedrock = true;
 
-		public static boolean CaptureOtherLivingEntities = true ;
+        public static boolean BlacklistByPiston = false;
+    }
 
-		public static boolean CaptureItemEntities = true ;
+    public abstract static class CarriageDrive {
+        public static int ContinuousCooldown = 5;
+    }
 
-		public static boolean CaptureOtherEntities = true ;
+    public abstract static class CarriageMotion {
+        public static boolean CapturePlayerEntities = true;
 
-		public static boolean TeleportEntities = true ;
+        public static boolean CaptureOtherLivingEntities = true;
 
-		public static boolean RenderInFinalPositionDuringLag = false ;
+        public static boolean CaptureItemEntities = true;
 
-		public static int MotionDuration = 20 ;
+        public static boolean CaptureOtherEntities = true;
 
-		public static int TeleportationDuration = 20 * 8 ;
-	}
+        public static boolean TeleportEntities = true;
 
-	public abstract static class Cosmetic
-	{
-		public static boolean ShowHelpInTooltips = true ;
-	}
+        public static boolean RenderInFinalPositionDuringLag = false;
 
-	public abstract static class DirtyHacks
-	{
-		public static boolean UpdateBuildcraftPipes = true ;
-	}
+        public static int MotionDuration = 20;
 
-	public abstract static class Debug
-	{
-		public static boolean LogMotionExceptions = false ;
-	}
+        public static int TeleportationDuration = 20 * 8;
+    }
 
-	public static boolean HardmodeActive = false ;
+    public abstract static class Cosmetic {
+        public static boolean ShowHelpInTooltips = true;
+    }
 
-	public enum TextureSets
-	{
-		JAKJ
-		(
-			"default 256x textures" ,
-			256 ,
-			102 , 99 , 159 , 155
-		) ,
+    public abstract static class DirtyHacks {
+        public static boolean UpdateBuildcraftPipes = true;
+    }
 
-		cubemelon
-		(
-			"16x textures by cubemelon" ,
-			16 ,
-			7 , 7 , 9 , 9
-		) ,
+    public abstract static class Debug {
+        public static boolean LogMotionExceptions = false;
+    }
 
-		JustHev
-		(
-			"16x textures (with support for colourblindness) by JustHev" ,
-			16 ,
-			7 , 5 , 9 , 7
-		) ,
+    public static boolean HardmodeActive = false;
 
-		uberifix_wood
-		(
-			"16x wood-style textures by uberifix" ,
-			16 ,
-			7 , 4 , 9 , 6
-		) ,
+    public enum TextureSets {
+        JAKJ
+                (
+                        "default 256x textures",
+                        256,
+                        102, 99, 159, 155
+                ),
 
-		uberifix_metal
-		(
-			"16x metal-style textures (with support for colourblindness) by uberifix" ,
-			16 ,
-			7 , 4 , 9 , 6
-		) ,
+        cubemelon
+                (
+                        "16x textures by cubemelon",
+                        16,
+                        7, 7, 9, 9
+                ),
 
-		Lethosos
-		(
-			"16x Dynasty-style textures by Lethosos" ,
-			16 ,
-			7 , 8 , 9 , 10
-		) ;
+        JustHev
+                (
+                        "16x textures (with support for colourblindness) by JustHev",
+                        16,
+                        7, 5, 9, 7
+                ),
 
-		public String Description ;
+        uberifix_wood
+                (
+                        "16x wood-style textures by uberifix",
+                        16,
+                        7, 4, 9, 6
+                ),
 
-		public double LabelMinH ;
-		public double LabelMinV ;
+        uberifix_metal
+                (
+                        "16x metal-style textures (with support for colourblindness) by uberifix",
+                        16,
+                        7, 4, 9, 6
+                ),
 
-		public double LabelMaxH ;
-		public double LabelMaxV ;
+        Lethosos
+                (
+                        "16x Dynasty-style textures by Lethosos",
+                        16,
+                        7, 8, 9, 10
+                );
 
-		private TextureSets ( String Description , double Resolution , double LabelMinH , double LabelMinV , double LabelMaxH , double LabelMaxV )
-		{
-			this . Description = Description ;
+        public String Description;
 
-			this . LabelMinH = LabelMinH / Resolution ;
-			this . LabelMinV = LabelMinV / Resolution ;
+        public double LabelMinH;
+        public double LabelMinV;
 
-			this . LabelMaxH = LabelMaxH / Resolution ;
-			this . LabelMaxV = LabelMaxV / Resolution ;
-		}
+        public double LabelMaxH;
+        public double LabelMaxV;
 
-		public static int TextureSet ;
-	}
+        private TextureSets(String Description, double Resolution, double LabelMinH, double LabelMinV, double LabelMaxH, double LabelMaxV) {
+            this.Description = Description;
 
-	public Configuration ( java . io . File File )
-	{
-		super ( File ) ;
-	}
+            this.LabelMinH = LabelMinH / Resolution;
+            this.LabelMinV = LabelMinV / Resolution;
 
-	public void Process ( )
-	{
-		{
-			BlockIds . Carriage = BlockId ( "Carriages" , 1123 ) ;
+            this.LabelMaxH = LabelMaxH / Resolution;
+            this.LabelMaxV = LabelMaxV / Resolution;
+        }
 
-			BlockIds . CarriageDrive = BlockId ( "Carriage Drives" , 1124 ) ;
+        public static int TextureSet;
+    }
 
-			BlockIds . Spectre = BlockId ( "Motive Spectre" , 1125 ) ;
-		}
+    public Configuration(java.io.File File) {
+        super(File);
+    }
 
-		{
-			ToolItemSet . Id = ItemId ( "Tools" , 11235 ) ;
+    public void Process() {
+        {
+            BlockIds.Carriage = BlockId("Carriages", 1123);
 
-			SimpleItemSet . Id = ItemId ( "Simple Items" , 11236 ) ;
-		}
+            BlockIds.CarriageDrive = BlockId("Carriage Drives", 1124);
 
-		{
-			Category = "Carriage" ;
+            BlockIds.Spectre = BlockId("Motive Spectre", 1125);
+        }
 
-			{
-				String Blacklist = String ( "Blacklist" , "" ) ;
+        {
+            ToolItemSet.Id = ItemId("Tools", 11235);
 
-				if ( ! Blacklist . equals ( "" ) )
-				{
-					for ( String BlacklistItem : Blacklist . split ( "," ) )
-					{
-						String [ ] BlacklistItemElements = BlacklistItem . split ( ":" ) ;
+            SimpleItemSet.Id = ItemId("Simple Items", 11236);
+        }
 
-						try
-						{
-							if ( BlacklistItemElements . length == 1 )
-							{
-								CarriagePackageBlacklist . Add ( Integer . parseInt ( BlacklistItemElements [ 0 ] ) ) ;
+        {
+            Category = "Carriage";
 
-								continue ;
-							}
+            {
+                String Blacklist = String("Blacklist", "");
 
-							if ( BlacklistItemElements . length == 2 )
-							{
-								CarriagePackageBlacklist . Add ( Integer . parseInt ( BlacklistItemElements [ 0 ] ) , Integer . parseInt ( BlacklistItemElements [ 1 ] ) ) ;
+                if (!Blacklist.equals("")) {
+                    for (String BlacklistItem : Blacklist.split(",")) {
+                        String[] BlacklistItemElements = BlacklistItem.split(":");
 
-								continue ;
-							}
-						}
-						catch ( Throwable Throwable )
-						{
-							Throwable . printStackTrace ( ) ;
-						}
+                        try {
+                            if (BlacklistItemElements.length == 1) {
+                                CarriagePackageBlacklist.Add(Integer.parseInt(BlacklistItemElements[0]));
 
-						new RuntimeException ( "Invalid blacklist item: " + BlacklistItem ) . printStackTrace ( ) ;
-					}
-				}
-			}
+                                continue;
+                            }
 
-			CarriagePackage . MaxBlockCount = BoundedInteger ( "Maximum size of any carriage (0 = no limit)" , 0 , CarriagePackage . MaxBlockCount , Integer . MAX_VALUE ) ;
+                            if (BlacklistItemElements.length == 2) {
+                                CarriagePackageBlacklist.Add(Integer.parseInt(BlacklistItemElements[0]), Integer.parseInt(BlacklistItemElements[1]));
 
-			Carriage . MaxPlatformBurden = BoundedInteger ( "Maximum blocks carried by platform carriage" , 1 , Carriage . MaxPlatformBurden , Integer . MAX_VALUE ) ;
+                                continue;
+                            }
+                        } catch (Throwable Throwable) {
+                            Throwable.printStackTrace();
+                        }
 
-			Carriage . MaxSupportBurden = BoundedInteger ( "Maximum blocks carried by a support carriage" , 1 , Carriage . MaxSupportBurden , Integer . MAX_VALUE ) ;
+                        new RuntimeException("Invalid blacklist item: " + BlacklistItem).printStackTrace();
+                    }
+                }
+            }
 
-			Carriage . BlacklistBedrock = Boolean ( "Carriages refuse to move bedrock (DANGEROUS IF FALSE)" , Carriage . BlacklistBedrock ) ;
+            CarriagePackage.MaxBlockCount = BoundedInteger("Maximum size of any carriage (0 = no limit)", 0, CarriagePackage.MaxBlockCount, Integer.MAX_VALUE);
 
-			Carriage . BlacklistByPiston = Boolean ( "Carriages refuse to move blocks that pistons cannot move" , Carriage . BlacklistByPiston ) ;
-		}
+            Carriage.MaxPlatformBurden = BoundedInteger("Maximum blocks carried by platform carriage", 1, Carriage.MaxPlatformBurden, Integer.MAX_VALUE);
 
-		{
-			Category = "Carriage Drive" ;
+            Carriage.MaxSupportBurden = BoundedInteger("Maximum blocks carried by a support carriage", 1, Carriage.MaxSupportBurden, Integer.MAX_VALUE);
 
-			CarriageDrive . ContinuousCooldown = BoundedInteger ( "Cooldown (in ticks) between motions in continuous mode" , 0 , CarriageDrive . ContinuousCooldown , Integer . MAX_VALUE ) ;
-		}
+            Carriage.BlacklistBedrock = Boolean("Carriages refuse to move bedrock (DANGEROUS IF FALSE)", Carriage.BlacklistBedrock);
 
-		{
-			Category = "Carriage Motion" ;
+            Carriage.BlacklistByPiston = Boolean("Carriages refuse to move blocks that pistons cannot move", Carriage.BlacklistByPiston);
+        }
 
-			CarriageMotion . CapturePlayerEntities = Boolean ( "Should grab players during motion" , CarriageMotion . CapturePlayerEntities ) ;
+        {
+            Category = "Carriage Drive";
 
-			CarriageMotion . CaptureOtherLivingEntities = Boolean ( "Should grab non-player living entities during motion" , CarriageMotion . CaptureOtherLivingEntities ) ;
+            CarriageDrive.ContinuousCooldown = BoundedInteger("Cooldown (in ticks) between motions in continuous mode", 0, CarriageDrive.ContinuousCooldown, Integer.MAX_VALUE);
+        }
 
-			CarriageMotion . CaptureItemEntities = Boolean ( "Should grab floating items during motion" , CarriageMotion . CaptureItemEntities ) ;
+        {
+            Category = "Carriage Motion";
 
-			CarriageMotion . CaptureOtherEntities = Boolean ( "Should grab all other miscellaneous entities during motion" , CarriageMotion . CaptureOtherEntities ) ;
+            CarriageMotion.CapturePlayerEntities = Boolean("Should grab players during motion", CarriageMotion.CapturePlayerEntities);
 
-			CarriageMotion . TeleportEntities = Boolean ( "Should translocate grabbed entities" , CarriageMotion . TeleportEntities ) ;
+            CarriageMotion.CaptureOtherLivingEntities = Boolean("Should grab non-player living entities during motion", CarriageMotion.CaptureOtherLivingEntities);
 
-			CarriagePackage . ObstructedByLiquids = Boolean ( "Carriage motion is obstructed by liquids" , CarriagePackage . ObstructedByLiquids ) ;
+            CarriageMotion.CaptureItemEntities = Boolean("Should grab floating items during motion", CarriageMotion.CaptureItemEntities);
 
-			CarriagePackage . ObstructedByFragileBlocks = Boolean ( "Carriage motion is obstructed by fragile blocks like tall grass" , CarriagePackage . ObstructedByFragileBlocks ) ;
+            CarriageMotion.CaptureOtherEntities = Boolean("Should grab all other miscellaneous entities during motion", CarriageMotion.CaptureOtherEntities);
 
-			CarriageMotion . RenderInFinalPositionDuringLag = Boolean ( "Animation of motion should stop even during severe lag" , CarriageMotion . RenderInFinalPositionDuringLag ) ;
+            CarriageMotion.TeleportEntities = Boolean("Should translocate grabbed entities", CarriageMotion.TeleportEntities);
 
-			CarriageMotion . MotionDuration = BoundedInteger ( "Duration of motion in ticks" , 10 , CarriageMotion . MotionDuration , Integer . MAX_VALUE ) ;
+            CarriagePackage.ObstructedByLiquids = Boolean("Carriage motion is obstructed by liquids", CarriagePackage.ObstructedByLiquids);
 
-			MotiveSpectreEntity . Velocity = 1 / ( ( double ) CarriageMotion . MotionDuration ) ;
+            CarriagePackage.ObstructedByFragileBlocks = Boolean("Carriage motion is obstructed by fragile blocks like tall grass", CarriagePackage.ObstructedByFragileBlocks);
 
-			CarriageMotion . TeleportationDuration = BoundedInteger ( "Duration of translocation in ticks" , 10 , CarriageMotion . TeleportationDuration , Integer . MAX_VALUE ) ;
-		}
+            CarriageMotion.RenderInFinalPositionDuringLag = Boolean("Animation of motion should stop even during severe lag", CarriageMotion.RenderInFinalPositionDuringLag);
 
-		{
-			Category = "Texture Sets" ;
+            CarriageMotion.MotionDuration = BoundedInteger("Duration of motion in ticks", 10, CarriageMotion.MotionDuration, Integer.MAX_VALUE);
 
-			int TextureSetCount = TextureSets . values ( ) . length ;
+            MotiveSpectreEntity.Velocity = 1 / ((double) CarriageMotion.MotionDuration);
 
-			TextureSets . TextureSet = BoundedInteger ( "Index of texture set" , 0 , TextureSets . TextureSet , TextureSetCount - 1 ) ;
+            CarriageMotion.TeleportationDuration = BoundedInteger("Duration of translocation in ticks", 10, CarriageMotion.TeleportationDuration, Integer.MAX_VALUE);
+        }
 
-			Registry . TexturePrefix = TextureSets . values ( ) [ TextureSets . TextureSet ] . name ( ) + "/" ;
+        {
+            Category = "Texture Sets";
 
-			String TextureSetDescriptions = "" ;
+            int TextureSetCount = TextureSets.values().length;
 
-			for ( TextureSets TextureSet : TextureSets . values ( ) )
-			{
-				if ( TextureSet . ordinal ( ) > 0 )
-				{
-					TextureSetDescriptions += "\n" ;
-				}
+            TextureSets.TextureSet = BoundedInteger("Index of texture set", 0, TextureSets.TextureSet, TextureSetCount - 1);
 
-				TextureSetDescriptions += TextureSet . ordinal ( ) + " - " + TextureSet . Description ;
-			}
+            Registry.TexturePrefix = TextureSets.values()[TextureSets.TextureSet].name() + "/";
 
-			Configuration . addCustomCategoryComment ( Category , TextureSetDescriptions ) ;
-		}
+            String TextureSetDescriptions = "";
 
-		{
-			Category = "Cosmetics" ;
+            for (TextureSets TextureSet : TextureSets.values()) {
+                if (TextureSet.ordinal() > 0) {
+                    TextureSetDescriptions += "\n";
+                }
 
-			Cosmetic . ShowHelpInTooltips = Boolean ( "Show descriptions of purposes/uses of blocks/items in tooltips" , Cosmetic . ShowHelpInTooltips ) ;
-		}
+                TextureSetDescriptions += TextureSet.ordinal() + " - " + TextureSet.Description;
+            }
 
-		{
-			Category = "Dirty Hacks" ;
+            Configuration.addCustomCategoryComment(Category, TextureSetDescriptions);
+        }
 
-			DirtyHacks . UpdateBuildcraftPipes = Boolean ( "Attempt to hyper-reinitialize Buildcraft pipes after motion" , DirtyHacks . UpdateBuildcraftPipes ) ;
-		}
+        {
+            Category = "Cosmetics";
 
-		{
-			Category = "Debugging" ;
+            Cosmetic.ShowHelpInTooltips = Boolean("Show descriptions of purposes/uses of blocks/items in tooltips", Cosmetic.ShowHelpInTooltips);
+        }
 
-			Debug . LogMotionExceptions = Boolean ( "Write carriage-motion errors to client/server log" , Debug . LogMotionExceptions ) ;
-		}
+        {
+            Category = "Dirty Hacks";
 
-		{
-			Category = "Hardmode" ;
+            DirtyHacks.UpdateBuildcraftPipes = Boolean("Attempt to hyper-reinitialize Buildcraft pipes after motion", DirtyHacks.UpdateBuildcraftPipes);
+        }
+
+        {
+            Category = "Debugging";
+
+            Debug.LogMotionExceptions = Boolean("Write carriage-motion errors to client/server log", Debug.LogMotionExceptions);
+        }
+
+        {
+            Category = "Hardmode";
 
 //			HardmodeActive = Boolean ( "Hardmode is activated" , HardmodeActive ) ;
-		}
+        }
 
-		Configuration . save ( ) ;
-	}
+        Configuration.save();
+    }
 }

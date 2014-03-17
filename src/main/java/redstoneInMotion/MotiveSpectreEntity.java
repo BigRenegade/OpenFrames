@@ -1,172 +1,145 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class MotiveSpectreEntity extends TileEntity
-{
-	public Directions MotionDirection ;
+import net.minecraft.server.management.PlayerInstance;
 
-	public BlockPosition RenderCacheKey ;
+public class MotiveSpectreEntity extends TileEntity {
+    public Directions MotionDirection;
 
-	public net . minecraft . nbt . NBTTagList PendingBlockUpdates ;
+    public BlockPosition RenderCacheKey;
 
-	public BlockRecord DriveRecord ;
+    public net.minecraft.nbt.NBTTagList PendingBlockUpdates;
 
-	public boolean DriveIsAnchored ;
+    public BlockRecord DriveRecord;
 
-	public BlockRecordSet Body ;
+    public boolean DriveIsAnchored;
 
-	public int TicksExisted ;
+    public BlockRecordSet Body;
 
-	public static double Velocity ;
+    public int TicksExisted;
 
-	public void ShiftBlockPosition ( BlockRecord Record )
-	{
-		Record . Shift ( MotionDirection ) ;
-	}
+    public static double Velocity;
 
-	public void ShiftPipeItemPosition ( Object Position ) throws Throwable
-	{
-		ModInteraction . BC_Position_x . set ( Position , ( ( Double ) ModInteraction . BC_Position_x . get ( Position ) ) + MotionDirection . DeltaX ) ;
-		ModInteraction . BC_Position_y . set ( Position , ( ( Double ) ModInteraction . BC_Position_y . get ( Position ) ) + MotionDirection . DeltaY ) ;
-		ModInteraction . BC_Position_z . set ( Position , ( ( Double ) ModInteraction . BC_Position_z . get ( Position ) ) + MotionDirection . DeltaZ ) ;
-	}
+    public void ShiftBlockPosition(BlockRecord Record) {
+        Record.Shift(MotionDirection);
+    }
 
-	public void ScheduleShiftedBlockUpdate ( net . minecraft . nbt . NBTTagCompound PendingBlockUpdateRecord )
-	{
-		worldObj . scheduleBlockUpdateFromLoad
-		(
-			PendingBlockUpdateRecord . getInteger ( "X" ) + MotionDirection . DeltaX ,
-			PendingBlockUpdateRecord . getInteger ( "Y" ) + MotionDirection . DeltaY ,
-			PendingBlockUpdateRecord . getInteger ( "Z" ) + MotionDirection . DeltaZ ,
+    public void ShiftPipeItemPosition(Object Position) throws Throwable {
+        ModInteraction.BC_Position_x.set(Position, ((Double) ModInteraction.BC_Position_x.get(Position)) + MotionDirection.DeltaX);
+        ModInteraction.BC_Position_y.set(Position, ((Double) ModInteraction.BC_Position_y.get(Position)) + MotionDirection.DeltaY);
+        ModInteraction.BC_Position_z.set(Position, ((Double) ModInteraction.BC_Position_z.get(Position)) + MotionDirection.DeltaZ);
+    }
 
-			PendingBlockUpdateRecord . getInteger ( "Id" ) ,
+    public void ScheduleShiftedBlockUpdate(net.minecraft.nbt.NBTTagCompound PendingBlockUpdateRecord) {
+        worldObj.scheduleBlockUpdateFromLoad
+                (
+                        PendingBlockUpdateRecord.getInteger("X") + MotionDirection.DeltaX,
+                        PendingBlockUpdateRecord.getInteger("Y") + MotionDirection.DeltaY,
+                        PendingBlockUpdateRecord.getInteger("Z") + MotionDirection.DeltaZ,
 
-			PendingBlockUpdateRecord . getInteger ( "Delay" ) ,
+                        PendingBlockUpdateRecord.getInteger("Id"),
 
-			PendingBlockUpdateRecord . getInteger ( "Priority" )
-		) ;
-	}
+                        PendingBlockUpdateRecord.getInteger("Delay"),
 
-	@Override
-	public void updateEntity ( )
-	{
-		TicksExisted ++ ;
+                        PendingBlockUpdateRecord.getInteger("Priority")
+                );
+    }
 
-		for ( CapturedEntity Entity : CapturedEntities )
-		{
-			Entity . Update ( ) ;
-		}
+    @Override
+    public void updateEntity() {
+        TicksExisted++;
 
-		if ( worldObj . isRemote )
-		{
-			return ;
-		}
+        for (CapturedEntity Entity : CapturedEntities) {
+            Entity.Update();
+        }
 
-		if ( TicksExisted < Configuration . CarriageMotion . MotionDuration )
-		{
-			return ;
-		}
+        if (worldObj.isRemote) {
+            return;
+        }
 
-		Release ( ) ;
-	}
+        if (TicksExisted < Configuration.CarriageMotion.MotionDuration) {
+            return;
+        }
 
-	public static int MultipartContainerBlockId ;
+        Release();
+    }
 
-	public void Release ( )
-	{
-		for ( BlockRecord Record : Body )
-		{
-			ShiftBlockPosition ( Record ) ;
+    public static int MultipartContainerBlockId;
 
-			SneakyWorldUtil . SetBlock ( worldObj , Record . X , Record . Y , Record . Z , Record . Id , Record . Meta ) ;
-		}
+    public void Release() {
+        for (BlockRecord Record : Body) {
+            ShiftBlockPosition(Record);
 
-		BlockRecordList PipesToInitialize = new BlockRecordList ( ) ;
+            SneakyWorldUtil.SetBlock(worldObj, Record.X, Record.Y, Record.Z, Record.Id, Record.Meta);
+        }
 
-		if ( ModInteraction . ForgeMultipart . MultipartSaveLoad_loadingWorld_$eq != null )
-		{
-			try
-			{
-				ModInteraction . ForgeMultipart . MultipartSaveLoad_loadingWorld_$eq . invoke ( null , worldObj ) ;
-			}
-			catch ( Throwable Throwable )
-			{
-				Throwable . printStackTrace ( ) ;
-			}
-		}
+        BlockRecordList PipesToInitialize = new BlockRecordList();
 
-		BlockRecordList MultipartTilesToInitialize = new BlockRecordList ( ) ;
+        if (ModInteraction.ForgeMultipart.MultipartSaveLoad_loadingWorld_$eq != null) {
+            try {
+                ModInteraction.ForgeMultipart.MultipartSaveLoad_loadingWorld_$eq.invoke(null, worldObj);
+            } catch (Throwable Throwable) {
+                Throwable.printStackTrace();
+            }
+        }
 
-		java . util . HashMap < net . minecraft . world . chunk . Chunk , java . util . HashMap < Object , net . minecraft . tileentity . TileEntity > > MultipartTileSetsToPropagate =
-			new java . util . HashMap < net . minecraft . world . chunk . Chunk , java . util . HashMap < Object , net . minecraft . tileentity . TileEntity > > ( ) ;
+        BlockRecordList MultipartTilesToInitialize = new BlockRecordList();
 
-		for ( BlockRecord Record : Body )
-		{
-			if ( Record . EntityRecord != null )
-			{
-				Record . EntityRecord . setInteger ( "x" , Record . X ) ;
-				Record . EntityRecord . setInteger ( "y" , Record . Y ) ;
-				Record . EntityRecord . setInteger ( "z" , Record . Z ) ;
+        java.util.HashMap<net.minecraft.world.chunk.Chunk, java.util.HashMap<Object, net.minecraft.tileentity.TileEntity>> MultipartTileSetsToPropagate =
+                new java.util.HashMap<net.minecraft.world.chunk.Chunk, java.util.HashMap<Object, net.minecraft.tileentity.TileEntity>>();
 
-				if ( Record . EntityRecord . getString ( "id" ) . equals ( "savedMultipart") )
-				{
-					try
-					{
-						if ( ModInteraction . ForgeMultipart . MultipartHelper_createTileFromNBT != null )
-						{
-							Record . Entity = ( net . minecraft . tileentity . TileEntity ) ModInteraction . ForgeMultipart . MultipartHelper_createTileFromNBT
-								. invoke ( null , worldObj , Record . EntityRecord ) ;
-						}
-						else
-						{
-							Record . Entity = ( net . minecraft . tileentity . TileEntity ) ModInteraction . ForgeMultipart . TileMultipart_createFromNBT . invoke ( null , Record . EntityRecord ) ;
+        for (BlockRecord Record : Body) {
+            if (Record.EntityRecord != null) {
+                Record.EntityRecord.setInteger("x", Record.X);
+                Record.EntityRecord.setInteger("y", Record.Y);
+                Record.EntityRecord.setInteger("z", Record.Z);
 
-							MultipartContainerBlockId = Record . Id ;
+                if (Record.EntityRecord.getString("id").equals("savedMultipart")) {
+                    try {
+                        if (ModInteraction.ForgeMultipart.MultipartHelper_createTileFromNBT != null) {
+                            Record.Entity = (net.minecraft.tileentity.TileEntity) ModInteraction.ForgeMultipart.MultipartHelper_createTileFromNBT
+                                    .invoke(null, worldObj, Record.EntityRecord);
+                        } else {
+                            Record.Entity = (net.minecraft.tileentity.TileEntity) ModInteraction.ForgeMultipart.TileMultipart_createFromNBT.invoke(null, Record.EntityRecord);
 
-							net . minecraft . world . chunk . Chunk Chunk = worldObj . getChunkFromBlockCoords ( Record . X , Record . Z ) ;
+                            MultipartContainerBlockId = Record.Id;
 
-							java . util . HashMap < Object , net . minecraft . tileentity . TileEntity > MultipartTilesToPropagate = MultipartTileSetsToPropagate . get ( Chunk ) ;
+                            net.minecraft.world.chunk.Chunk Chunk = worldObj.getChunkFromBlockCoords(Record.X, Record.Z);
 
-							if ( MultipartTilesToPropagate == null )
-							{
-								MultipartTilesToPropagate = new java . util . HashMap < Object , net . minecraft . tileentity . TileEntity > ( ) ;
+                            java.util.HashMap<Object, net.minecraft.tileentity.TileEntity> MultipartTilesToPropagate = MultipartTileSetsToPropagate.get(Chunk);
 
-								MultipartTileSetsToPropagate . put ( Chunk , MultipartTilesToPropagate ) ;
-							}
+                            if (MultipartTilesToPropagate == null) {
+                                MultipartTilesToPropagate = new java.util.HashMap<Object, net.minecraft.tileentity.TileEntity>();
 
-							MultipartTilesToPropagate . put ( Record . Entity , Record . Entity ) ;
-						}
+                                MultipartTileSetsToPropagate.put(Chunk, MultipartTilesToPropagate);
+                            }
 
-						MultipartTilesToInitialize . add ( Record ) ;
-					}
-					catch ( Throwable Throwable )
-					{
-						Throwable . printStackTrace ( ) ;
+                            MultipartTilesToPropagate.put(Record.Entity, Record.Entity);
+                        }
 
-						continue ;
-					}
-				}
-				else
-				{
-					Record . Entity = net . minecraft . tileentity . TileEntity . createAndLoadEntity ( Record . EntityRecord ) ;
-				}
+                        MultipartTilesToInitialize.add(Record);
+                    } catch (Throwable Throwable) {
+                        Throwable.printStackTrace();
 
-				SneakyWorldUtil . SetTileEntity ( worldObj , Record . X , Record . Y , Record . Z , Record . Entity ) ;
+                        continue;
+                    }
+                } else {
+                    Record.Entity = net.minecraft.tileentity.TileEntity.createAndLoadEntity(Record.EntityRecord);
+                }
 
-				if ( Configuration . DirtyHacks . UpdateBuildcraftPipes )
-				{
-					if ( ModInteraction . BC_TileGenericPipe != null )
-					{
-						if ( ModInteraction . BC_TileGenericPipe . isInstance ( Record . Entity ) )
-						{
-							PipesToInitialize . add ( Record ) ;
-						}
-					}
-				}
-			}
-		}
+                SneakyWorldUtil.SetTileEntity(worldObj, Record.X, Record.Y, Record.Z, Record.Entity);
+
+                if (Configuration.DirtyHacks.UpdateBuildcraftPipes) {
+                    if (ModInteraction.BC_TileGenericPipe != null) {
+                        if (ModInteraction.BC_TileGenericPipe.isInstance(Record.Entity)) {
+                            PipesToInitialize.add(Record);
+                        }
+                    }
+                }
+            }
+        }
 
 /*		for ( BlockRecord Record : MultipartTilesToInitialize )
-		{
+        {
 			try
 			{
 				ModInteraction . ForgeMultipart . TileMultipart_onChunkLoad . invoke ( Record . Entity ) ;
@@ -177,468 +150,399 @@ public class MotiveSpectreEntity extends TileEntity
 			}
 		}*/
 
-		if ( ModInteraction . ForgeMultipart . MultipartHelper_sendDescPacket != null )
-		{
-			for ( BlockRecord Record : MultipartTilesToInitialize )
-			{
-				try
-				{
-					ModInteraction . ForgeMultipart . MultipartHelper_sendDescPacket . invoke ( null , worldObj , Record . Entity ) ;
-				}
-				catch ( Throwable Throwable )
-				{
-					Throwable . printStackTrace ( ) ;
-				}
-			}
-		}
-		else
-		{
-			for ( java . util . Map . Entry < net . minecraft . world . chunk . Chunk , java . util . HashMap < Object , net . minecraft . tileentity . TileEntity > > MultipartTilesToPropagate
-				: MultipartTileSetsToPropagate . entrySet ( ) )
-			{
-				net . minecraft . world . chunk . Chunk Chunk = MultipartTilesToPropagate . getKey ( ) ;
-
-				java . util . Map SavedTileEntityMap = Chunk . chunkTileEntityMap ;
-
-				Chunk . chunkTileEntityMap = MultipartTilesToPropagate . getValue ( ) ;
-
-				try
-				{
-					for ( net . minecraft . entity . player . EntityPlayerMP Player : ( ( java . util . List < net . minecraft . entity . player . EntityPlayerMP > )
-						( ( net . minecraft . world . WorldServer ) worldObj ) . getPlayerManager ( ) . getOrCreateChunkWatcher ( Chunk . xPosition , Chunk . zPosition , false ) . playersInChunk ) )
-					{
-						if ( ! Player . loadedChunks . contains ( Chunk . getChunkCoordIntPair ( ) ) )
-						{
-							try
-							{
-								if ( ModInteraction . ForgeMultipart . MultipartSaveLoad_loadingWorld_$eq == null )
-								{
-									MultipartPropagationPacket . Dispatch ( Player , MultipartTilesToPropagate . getValue ( ) . values ( ) ) ;
-								}
-
-								ModInteraction . ForgeMultipart . MultipartSPH_onChunkWatch . invoke ( null , Player , Chunk ) ;
-							}
-							catch ( Throwable Throwable )
-							{
-								Throwable . printStackTrace ( ) ;
-							}
-						}
-					}
-				}
-				catch ( Throwable Throwable )
-				{
-					Throwable . printStackTrace ( ) ;
-				}
-
-				Chunk . chunkTileEntityMap = SavedTileEntityMap ;
-			}
-		}
-
-		for ( BlockRecord Record : PipesToInitialize )
-		{
-			try
-			{
-				Object Pipe = ModInteraction . BC_TileGenericPipe_pipe . get ( Record . Entity ) ;
-
-				ModInteraction . BC_TileGenericPipe_initialize . invoke ( Record . Entity , Pipe ) ;
-
-				Object Transport = ModInteraction . BC_Pipe_transport . get ( Pipe ) ;
-
-				if ( ! ModInteraction . BC_PipeTransportItems . isInstance ( Transport ) )
-				{
-					continue ;
-				}
-
-				ModInteraction . BC_PipeTransportItems_delay . set ( Transport , -1 ) ;
-
-				java . util . List DelayedEntities = ( java . util . List ) ModInteraction . BC_PipeTransportItems_delayedEntitiesToLoad . get ( Transport ) ;
-
-				java . util . Map EntityMap = ( java . util . Map ) ModInteraction . BC_PipeTransportItems_travelingEntities . get ( Transport ) ;
-
-				for ( Object Entity : DelayedEntities )
-				{
-					Object Item = ModInteraction . BC_EntityData_item . get ( Entity ) ;
-
-					ModInteraction . BC_EntityPassiveItem_setWorld . invoke ( Item , worldObj ) ;
-
-					int Id = ( Integer ) ModInteraction . BC_EntityPassiveItem_getEntityId . invoke ( Item ) ;
-
-					EntityMap . put ( Id , Entity ) ;
-
-					Object ItemPosition = ModInteraction . BC_EntityPassiveItem_position . get ( Item ) ;
-
-					ShiftPipeItemPosition ( ItemPosition ) ;
-				}
-
-				DelayedEntities . clear ( ) ;
-			}
-			catch ( Throwable Throwable )
-			{
-				Throwable . printStackTrace ( ) ;
-			}
-		}
-
-		try
-		{
-			CarriageDriveEntity Drive = ( CarriageDriveEntity ) worldObj . getBlockTileEntity ( DriveRecord . X , DriveRecord . Y , DriveRecord . Z ) ;
-
-			if ( ! DriveIsAnchored )
-			{
-				Drive . Active = true ;
-			}
+        if (ModInteraction.ForgeMultipart.MultipartHelper_sendDescPacket != null) {
+            for (BlockRecord Record : MultipartTilesToInitialize) {
+                try {
+                    ModInteraction.ForgeMultipart.MultipartHelper_sendDescPacket.invoke(null, worldObj, Record.Entity);
+                } catch (Throwable Throwable) {
+                    Throwable.printStackTrace();
+                }
+            }
+        } else {
+            for (java.util.Map.Entry<net.minecraft.world.chunk.Chunk, java.util.HashMap<Object, net.minecraft.tileentity.TileEntity>> MultipartTilesToPropagate
+                    : MultipartTileSetsToPropagate.entrySet()) {
+                net.minecraft.world.chunk.Chunk Chunk = MultipartTilesToPropagate.getKey();
 
-			Drive . ToggleActivity ( ) ;
-		}
-		catch ( Throwable Throwable )
-		{
-			Throwable . printStackTrace ( ) ;
-		}
+                java.util.Map SavedTileEntityMap = Chunk.chunkTileEntityMap;
+
+                Chunk.chunkTileEntityMap = MultipartTilesToPropagate.getValue();
 
-		SneakyWorldUtil . RefreshBlock ( worldObj , xCoord , yCoord , zCoord , Blocks . Spectre . blockID , 0 ) ;
+                try {
+                    final PlayerInstance watcher = ((net.minecraft.world.WorldServer) worldObj).getPlayerManager().getOrCreateChunkWatcher(Chunk.xPosition, Chunk.zPosition, false);
+                    final java.util.List<net.minecraft.entity.player.EntityPlayerMP> players = (java.util.List<net.minecraft.entity.player.EntityPlayerMP>) Reflection.EstablishField(PlayerInstance.class, "playersInChunk").get(watcher);
+                    for (net.minecraft.entity.player.EntityPlayerMP Player : players) {
+                        if (!Player.loadedChunks.contains(Chunk.getChunkCoordIntPair())) {
+                            try {
+                                if (ModInteraction.ForgeMultipart.MultipartSaveLoad_loadingWorld_$eq == null) {
+                                    MultipartPropagationPacket.Dispatch(Player, MultipartTilesToPropagate.getValue().values());
+                                }
 
-		for ( BlockRecord Record : Body )
-		{
-			SneakyWorldUtil . RefreshBlock ( worldObj , Record . X , Record . Y , Record . Z , 0 , Record . Id ) ;
-		}
+                                ModInteraction.ForgeMultipart.MultipartSPH_onChunkWatch.invoke(null, Player, Chunk);
+                            } catch (Throwable Throwable) {
+                                Throwable.printStackTrace();
+                            }
+                        }
+                    }
+                } catch (Throwable Throwable) {
+                    Throwable.printStackTrace();
+                }
 
-		int PendingBlockUpdateCount = PendingBlockUpdates . tagCount ( ) ;
+                Chunk.chunkTileEntityMap = SavedTileEntityMap;
+            }
+        }
 
-		for ( int Index = 0 ; Index < PendingBlockUpdateCount ; Index ++ )
-		{
-			ScheduleShiftedBlockUpdate ( ( net . minecraft . nbt . NBTTagCompound ) PendingBlockUpdates . tagAt ( Index ) ) ;
-		}
-	}
+        for (BlockRecord Record : PipesToInitialize) {
+            try {
+                Object Pipe = ModInteraction.BC_TileGenericPipe_pipe.get(Record.Entity);
 
-	@Override
-	public void Finalize ( )
-	{
-		if ( worldObj . isRemote )
-		{
-			CarriageRenderCache . Release ( RenderCacheKey ) ;
-		}
-	}
+                ModInteraction.BC_TileGenericPipe_initialize.invoke(Record.Entity, Pipe);
 
-	@Override
-	public void WriteCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		TagCompound . setInteger ( "Motion" , MotionDirection . ordinal ( ) ) ;
+                Object Transport = ModInteraction.BC_Pipe_transport.get(Pipe);
 
-		TagCompound . setInteger ( "RenderCacheKeyX" , RenderCacheKey . X ) ;
-		TagCompound . setInteger ( "RenderCacheKeyY" , RenderCacheKey . Y ) ;
-		TagCompound . setInteger ( "RenderCacheKeyZ" , RenderCacheKey . Z ) ;
+                if (!ModInteraction.BC_PipeTransportItems.isInstance(Transport)) {
+                    continue;
+                }
 
-		TagCompound . setInteger ( "RenderCacheKeyD" , RenderCacheKey . Dimension ) ;
-	}
+                ModInteraction.BC_PipeTransportItems_delay.set(Transport, -1);
 
-	@Override
-	public void ReadCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		MotionDirection = Directions . values ( ) [ TagCompound . getInteger ( "Motion" ) ] ;
+                java.util.List DelayedEntities = (java.util.List) ModInteraction.BC_PipeTransportItems_delayedEntitiesToLoad.get(Transport);
 
-		RenderCacheKey = new BlockPosition ( TagCompound . getInteger ( "RenderCacheKeyX" ) , TagCompound . getInteger ( "RenderCacheKeyY" ) , TagCompound . getInteger ( "RenderCacheKeyZ" ) ,
-			TagCompound . getInteger ( "RenderCacheKeyD" ) ) ;
-	}
+                java.util.Map EntityMap = (java.util.Map) ModInteraction.BC_PipeTransportItems_travelingEntities.get(Transport);
 
-	@Override
-	public void WriteServerRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		TagCompound . setInteger ( "DriveX" , DriveRecord . X ) ;
-		TagCompound . setInteger ( "DriveY" , DriveRecord . Y ) ;
-		TagCompound . setInteger ( "DriveZ" , DriveRecord . Z ) ;
+                for (Object Entity : DelayedEntities) {
+                    Object Item = ModInteraction.BC_EntityData_item.get(Entity);
 
-		TagCompound . setBoolean ( "DriveIsAnchored" , DriveIsAnchored ) ;
+                    ModInteraction.BC_EntityPassiveItem_setWorld.invoke(Item, worldObj);
 
-		TagCompound . setTag ( "PendingBlockUpdates" , PendingBlockUpdates ) ;
+                    int Id = (Integer) ModInteraction.BC_EntityPassiveItem_getEntityId.invoke(Item);
 
-		{
-			net . minecraft . nbt . NBTTagList BodyRecord = new net . minecraft . nbt . NBTTagList ( ) ;
+                    EntityMap.put(Id, Entity);
 
-			for ( BlockRecord Record : Body )
-			{
-				net . minecraft . nbt . NBTTagCompound BodyBlockRecord = new net . minecraft . nbt . NBTTagCompound ( ) ;
+                    Object ItemPosition = ModInteraction.BC_EntityPassiveItem_position.get(Item);
 
-				BodyBlockRecord . setInteger ( "X" , Record . X ) ;
-				BodyBlockRecord . setInteger ( "Y" , Record . Y ) ;
-				BodyBlockRecord . setInteger ( "Z" , Record . Z ) ;
+                    ShiftPipeItemPosition(ItemPosition);
+                }
 
-				BodyBlockRecord . setInteger ( "Id" , Record . Id ) ;
+                DelayedEntities.clear();
+            } catch (Throwable Throwable) {
+                Throwable.printStackTrace();
+            }
+        }
 
-				BodyBlockRecord . setInteger ( "Meta" , Record . Meta ) ;
+        try {
+            CarriageDriveEntity Drive = (CarriageDriveEntity) worldObj.getBlockTileEntity(DriveRecord.X, DriveRecord.Y, DriveRecord.Z);
 
-				if ( Record . EntityRecord != null )
-				{
-					BodyBlockRecord . setCompoundTag ( "EntityRecord" , Record . EntityRecord ) ;
-				}
+            if (!DriveIsAnchored) {
+                Drive.Active = true;
+            }
 
-				BodyRecord . appendTag ( BodyBlockRecord ) ;
-			}
+            Drive.ToggleActivity();
+        } catch (Throwable Throwable) {
+            Throwable.printStackTrace();
+        }
 
-			TagCompound . setTag ( "Body" , BodyRecord ) ;
-		}
-	}
+        SneakyWorldUtil.RefreshBlock(worldObj, xCoord, yCoord, zCoord, Blocks.Spectre.blockID, 0);
 
-	@Override
-	public void ReadServerRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		DriveRecord = new BlockRecord ( TagCompound . getInteger ( "DriveX" ) , TagCompound . getInteger ( "DriveY" ) , TagCompound . getInteger ( "DriveZ" ) ) ;
+        for (BlockRecord Record : Body) {
+            SneakyWorldUtil.RefreshBlock(worldObj, Record.X, Record.Y, Record.Z, 0, Record.Id);
+        }
 
-		DriveIsAnchored = TagCompound . getBoolean ( "DriveIsAnchored" ) ;
+        int PendingBlockUpdateCount = PendingBlockUpdates.tagCount();
 
-		PendingBlockUpdates = TagCompound . getTagList ( "PendingBlockUpdates" ) ;
+        for (int Index = 0; Index < PendingBlockUpdateCount; Index++) {
+            ScheduleShiftedBlockUpdate((net.minecraft.nbt.NBTTagCompound) PendingBlockUpdates.tagAt(Index));
+        }
+    }
 
-		Body = new BlockRecordSet ( ) ;
+    @Override
+    public void Finalize() {
+        if (worldObj.isRemote) {
+            CarriageRenderCache.Release(RenderCacheKey);
+        }
+    }
 
-		{
-			net . minecraft . nbt . NBTTagList BodyRecord = TagCompound . getTagList ( "Body" ) ;
+    @Override
+    public void WriteCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        TagCompound.setInteger("Motion", MotionDirection.ordinal());
 
-			int BodyBlockCount = BodyRecord . tagCount ( ) ;
+        TagCompound.setInteger("RenderCacheKeyX", RenderCacheKey.X);
+        TagCompound.setInteger("RenderCacheKeyY", RenderCacheKey.Y);
+        TagCompound.setInteger("RenderCacheKeyZ", RenderCacheKey.Z);
 
-			for ( int Index = 0 ; Index < BodyBlockCount ; Index ++ )
-			{
-				net . minecraft . nbt . NBTTagCompound BodyBlockRecord = ( net . minecraft . nbt . NBTTagCompound ) BodyRecord . tagAt ( Index ) ;
+        TagCompound.setInteger("RenderCacheKeyD", RenderCacheKey.Dimension);
+    }
 
-				BlockRecord Record = new BlockRecord ( BodyBlockRecord . getInteger ( "X" ) , BodyBlockRecord . getInteger ( "Y" ) , BodyBlockRecord . getInteger ( "Z" ) ) ;
+    @Override
+    public void ReadCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        MotionDirection = Directions.values()[TagCompound.getInteger("Motion")];
 
-				Record . Id = BodyBlockRecord . getInteger ( "Id" ) ;
+        RenderCacheKey = new BlockPosition(TagCompound.getInteger("RenderCacheKeyX"), TagCompound.getInteger("RenderCacheKeyY"), TagCompound.getInteger("RenderCacheKeyZ"),
+                TagCompound.getInteger("RenderCacheKeyD"));
+    }
 
-				Record . Meta = BodyBlockRecord . getInteger ( "Meta" ) ;
+    @Override
+    public void WriteServerRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        TagCompound.setInteger("DriveX", DriveRecord.X);
+        TagCompound.setInteger("DriveY", DriveRecord.Y);
+        TagCompound.setInteger("DriveZ", DriveRecord.Z);
 
-				if ( BodyBlockRecord . hasKey ( "EntityRecord" ) )
-				{
-					Record . EntityRecord = BodyBlockRecord . getCompoundTag ( "EntityRecord" ) ;
-				}
+        TagCompound.setBoolean("DriveIsAnchored", DriveIsAnchored);
 
-				Body . add ( Record ) ;
-			}
-		}
-	}
+        TagCompound.setTag("PendingBlockUpdates", PendingBlockUpdates);
 
-	@Override
-	public void WriteClientRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		net . minecraft . nbt . NBTTagList CapturedEntityRecords = new net . minecraft . nbt . NBTTagList ( ) ;
+        {
+            net.minecraft.nbt.NBTTagList BodyRecord = new net.minecraft.nbt.NBTTagList();
 
-		for ( CapturedEntity Entity : CapturedEntities )
-		{
-			net . minecraft . nbt . NBTTagCompound CapturedEntityRecord = new net . minecraft . nbt . NBTTagCompound ( ) ;
+            for (BlockRecord Record : Body) {
+                net.minecraft.nbt.NBTTagCompound BodyBlockRecord = new net.minecraft.nbt.NBTTagCompound();
 
-			CapturedEntityRecord . setInteger ( "Id" , Entity . Entity . entityId ) ;
+                BodyBlockRecord.setInteger("X", Record.X);
+                BodyBlockRecord.setInteger("Y", Record.Y);
+                BodyBlockRecord.setInteger("Z", Record.Z);
 
-			CapturedEntityRecord . setDouble ( "InitialX" , Entity . InitialX ) ;
-			CapturedEntityRecord . setDouble ( "InitialY" , Entity . InitialY ) ;
-			CapturedEntityRecord . setDouble ( "InitialZ" , Entity . InitialZ ) ;
+                BodyBlockRecord.setInteger("Id", Record.Id);
 
-			CapturedEntityRecords . appendTag ( CapturedEntityRecord ) ;
-		}
+                BodyBlockRecord.setInteger("Meta", Record.Meta);
 
-		TagCompound . setTag ( "CapturedEntities" , CapturedEntityRecords ) ;
-	}
+                if (Record.EntityRecord != null) {
+                    BodyBlockRecord.setCompoundTag("EntityRecord", Record.EntityRecord);
+                }
 
-	@Override
-	public void ReadClientRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		net . minecraft . nbt . NBTTagList CapturedEntityRecords = TagCompound . getTagList ( "CapturedEntities" ) ;
+                BodyRecord.appendTag(BodyBlockRecord);
+            }
 
-		CapturedEntities . clear ( ) ;
+            TagCompound.setTag("Body", BodyRecord);
+        }
+    }
 
-		int CapturedEntityCount = CapturedEntityRecords . tagCount ( ) ;
+    @Override
+    public void ReadServerRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        DriveRecord = new BlockRecord(TagCompound.getInteger("DriveX"), TagCompound.getInteger("DriveY"), TagCompound.getInteger("DriveZ"));
 
-		for ( int Index = 0 ; Index < CapturedEntityCount ; Index ++ )
-		{
-			net . minecraft . nbt . NBTTagCompound EntityRecord = ( net . minecraft . nbt . NBTTagCompound ) CapturedEntityRecords . tagAt ( Index ) ;
+        DriveIsAnchored = TagCompound.getBoolean("DriveIsAnchored");
 
-			net . minecraft . entity . Entity Entity = worldObj . getEntityByID ( EntityRecord . getInteger ( "Id" ) ) ;
+        PendingBlockUpdates = TagCompound.getTagList("PendingBlockUpdates");
 
-			if ( Entity == null )
-			{
-				continue ;
-			}
+        Body = new BlockRecordSet();
 
-			CapturedEntities . add ( new CapturedEntity ( Entity , EntityRecord . getDouble ( "InitialX" ) , EntityRecord . getDouble ( "InitialY" ) , EntityRecord . getDouble ( "InitialZ" ) ) ) ;
-		}
-	}
+        {
+            net.minecraft.nbt.NBTTagList BodyRecord = TagCompound.getTagList("Body");
 
-	public class CapturedEntity
-	{
-		public net . minecraft . entity . Entity Entity ;
+            int BodyBlockCount = BodyRecord.tagCount();
 
-		public double InitialX ;
-		public double InitialY ;
-		public double InitialZ ;
+            for (int Index = 0; Index < BodyBlockCount; Index++) {
+                net.minecraft.nbt.NBTTagCompound BodyBlockRecord = (net.minecraft.nbt.NBTTagCompound) BodyRecord.tagAt(Index);
 
-		boolean WasOnGround ;
+                BlockRecord Record = new BlockRecord(BodyBlockRecord.getInteger("X"), BodyBlockRecord.getInteger("Y"), BodyBlockRecord.getInteger("Z"));
 
-		boolean WasAirBorne ;
+                Record.Id = BodyBlockRecord.getInteger("Id");
 
-		public CapturedEntity ( net . minecraft . entity . Entity Entity )
-		{
-			this ( Entity , Entity . posX , Entity . posY , Entity . posZ ) ;
-		}
+                Record.Meta = BodyBlockRecord.getInteger("Meta");
 
-		public CapturedEntity ( net . minecraft . entity . Entity Entity , double InitialX , double InitialY , double InitialZ )
-		{
-			this . Entity = Entity ;
+                if (BodyBlockRecord.hasKey("EntityRecord")) {
+                    Record.EntityRecord = BodyBlockRecord.getCompoundTag("EntityRecord");
+                }
 
-			this . InitialX = InitialX ;
-			this . InitialY = InitialY ;
-			this . InitialZ = InitialZ ;
+                Body.add(Record);
+            }
+        }
+    }
 
-			WasOnGround = Entity . onGround ;
+    @Override
+    public void WriteClientRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        net.minecraft.nbt.NBTTagList CapturedEntityRecords = new net.minecraft.nbt.NBTTagList();
 
-			WasAirBorne = Entity . isAirBorne ;
+        for (CapturedEntity Entity : CapturedEntities) {
+            net.minecraft.nbt.NBTTagCompound CapturedEntityRecord = new net.minecraft.nbt.NBTTagCompound();
 
-			Update ( ) ;
-		}
+            CapturedEntityRecord.setInteger("Id", Entity.Entity.entityId);
 
-		public void SetPosition ( double OffsetX , double OffsetY , double OffsetZ )
-		{
-			Entity . setPosition ( InitialX + OffsetX , InitialY + OffsetY + Entity . yOffset , InitialZ + OffsetZ ) ;
-		}
+            CapturedEntityRecord.setDouble("InitialX", Entity.InitialX);
+            CapturedEntityRecord.setDouble("InitialY", Entity.InitialY);
+            CapturedEntityRecord.setDouble("InitialZ", Entity.InitialZ);
 
-		public void Update ( )
-		{
-			Entity . fallDistance = 0 ;
+            CapturedEntityRecords.appendTag(CapturedEntityRecord);
+        }
 
-			if ( TicksExisted == Configuration . CarriageMotion . MotionDuration )
-			{
-				Entity . motionX = 0 ;
-				Entity . motionY = 0 ;
-				Entity . motionZ = 0 ;
+        TagCompound.setTag("CapturedEntities", CapturedEntityRecords);
+    }
 
-				SetPosition ( MotionDirection . DeltaX , MotionDirection . DeltaY , MotionDirection . DeltaZ ) ;
+    @Override
+    public void ReadClientRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        net.minecraft.nbt.NBTTagList CapturedEntityRecords = TagCompound.getTagList("CapturedEntities");
 
-				Entity . prevPosX = Entity . posX ;
-				Entity . prevPosY = Entity . posY ;
-				Entity . prevPosZ = Entity . posZ ;
+        CapturedEntities.clear();
 
-				Entity . onGround = WasOnGround ;
+        int CapturedEntityCount = CapturedEntityRecords.tagCount();
 
-				Entity . isAirBorne = WasAirBorne ;
+        for (int Index = 0; Index < CapturedEntityCount; Index++) {
+            net.minecraft.nbt.NBTTagCompound EntityRecord = (net.minecraft.nbt.NBTTagCompound) CapturedEntityRecords.tagAt(Index);
 
-				return ;
-			}
+            net.minecraft.entity.Entity Entity = worldObj.getEntityByID(EntityRecord.getInteger("Id"));
 
-			Entity . onGround = false ;
+            if (Entity == null) {
+                continue;
+            }
 
-			Entity . isAirBorne = true ;
+            CapturedEntities.add(new CapturedEntity(Entity, EntityRecord.getDouble("InitialX"), EntityRecord.getDouble("InitialY"), EntityRecord.getDouble("InitialZ")));
+        }
+    }
 
-			Entity . motionX = Velocity * MotionDirection . DeltaX ;
-			Entity . motionY = Velocity * MotionDirection . DeltaY ;
-			Entity . motionZ = Velocity * MotionDirection . DeltaZ ;
+    public class CapturedEntity {
+        public net.minecraft.entity.Entity Entity;
 
-			SetPosition ( Entity . motionX * TicksExisted , Entity . motionY * TicksExisted , Entity . motionZ * TicksExisted ) ;
+        public double InitialX;
+        public double InitialY;
+        public double InitialZ;
 
-			Entity . prevPosX = Entity . posX - Entity . motionX ;
-			Entity . prevPosY = Entity . posY - Entity . motionY ;
-			Entity . prevPosZ = Entity . posZ - Entity . motionZ ;
-		}
-	}
+        boolean WasOnGround;
 
-	public java . util . ArrayList < CapturedEntity > CapturedEntities = new java . util . ArrayList < CapturedEntity > ( ) ;
+        boolean WasAirBorne;
 
-	public boolean ShouldCaptureEntity ( net . minecraft . entity . Entity Entity )
-	{
-		if ( Entity instanceof net . minecraft . entity . player . EntityPlayer )
-		{
-			return ( Configuration . CarriageMotion . CapturePlayerEntities ) ;
-		}
+        public CapturedEntity(net.minecraft.entity.Entity Entity) {
+            this(Entity, Entity.posX, Entity.posY, Entity.posZ);
+        }
 
-		if ( Entity instanceof net . minecraft . entity . EntityLiving )
-		{
-			return ( Configuration . CarriageMotion . CaptureOtherLivingEntities ) ;
-		}
+        public CapturedEntity(net.minecraft.entity.Entity Entity, double InitialX, double InitialY, double InitialZ) {
+            this.Entity = Entity;
 
-		if ( Entity instanceof net . minecraft . entity . item . EntityItem )
-		{
-			return ( Configuration . CarriageMotion . CaptureItemEntities ) ;
-		}
+            this.InitialX = InitialX;
+            this.InitialY = InitialY;
+            this.InitialZ = InitialZ;
 
-		return ( Configuration . CarriageMotion . CaptureOtherEntities ) ;
-	}
+            WasOnGround = Entity.onGround;
 
-	public void ProcessCapturedEntity ( net . minecraft . entity . Entity Entity )
-	{
-		CapturedEntities . add ( new CapturedEntity ( Entity ) ) ;
-	}
+            WasAirBorne = Entity.isAirBorne;
 
-	public void CaptureEntities ( int MinX , int MinY , int MinZ , int MaxX , int MaxY , int MaxZ )
-	{
-		net . minecraft . util . AxisAlignedBB EntityCaptureBox = net . minecraft . util . AxisAlignedBB . getBoundingBox ( MinX - 5 , MinY - 5 , MinZ - 5 , MaxX + 5 , MaxY + 5 , MaxZ + 5) ;
+            Update();
+        }
 
-		java . util . List EntitiesFound = worldObj . getEntitiesWithinAABB ( net . minecraft . entity . Entity . class , EntityCaptureBox ) ;
+        public void SetPosition(double OffsetX, double OffsetY, double OffsetZ) {
+            Entity.setPosition(InitialX + OffsetX, InitialY + OffsetY + Entity.yOffset, InitialZ + OffsetZ);
+        }
 
-		for ( Object EntityObject : EntitiesFound )
-		{
-			net . minecraft . entity . Entity Entity = ( net . minecraft . entity . Entity ) EntityObject ;
+        public void Update() {
+            Entity.fallDistance = 0;
 
-			BlockRecord PositionCheck = new BlockRecord ( ( int ) Math . floor ( Entity . posX ) , ( int ) Math . floor ( Entity . posY ) , ( int ) Math . floor ( Entity . posZ ) ) ;
+            if (TicksExisted == Configuration.CarriageMotion.MotionDuration) {
+                Entity.motionX = 0;
+                Entity.motionY = 0;
+                Entity.motionZ = 0;
 
-			if ( ! Body . contains ( PositionCheck ) )
-			{
-				PositionCheck . Y -- ;
+                SetPosition(MotionDirection.DeltaX, MotionDirection.DeltaY, MotionDirection.DeltaZ);
 
-				if ( ! Body . contains ( PositionCheck ) )
-				{
-					PositionCheck . Y -- ;
+                Entity.prevPosX = Entity.posX;
+                Entity.prevPosY = Entity.posY;
+                Entity.prevPosZ = Entity.posZ;
 
-					if ( ! Body . contains ( PositionCheck ) )
-					{
-						Entity = null ;
-					}
-				}
-			}
+                Entity.onGround = WasOnGround;
 
-			if ( Entity == null )
-			{
-				continue ;
-			}
+                Entity.isAirBorne = WasAirBorne;
 
-			if ( ShouldCaptureEntity ( Entity ) )
-			{
-				try
-				{
-					ProcessCapturedEntity ( Entity ) ;
-				}
-				catch ( Throwable Throwable )
-				{
-					Throwable . printStackTrace ( ) ;
-				}
-			}
-		}
-	}
+                return;
+            }
 
-	public void Absorb ( CarriagePackage Package )
-	{
-		MotionDirection = Package . MotionDirection ;
+            Entity.onGround = false;
 
-		Body = Package . Body ;
+            Entity.isAirBorne = true;
 
-		RenderCacheKey = Package . RenderCacheKey ;
+            Entity.motionX = Velocity * MotionDirection.DeltaX;
+            Entity.motionY = Velocity * MotionDirection.DeltaY;
+            Entity.motionZ = Velocity * MotionDirection.DeltaZ;
 
-		PendingBlockUpdates = Package . PendingBlockUpdates ;
+            SetPosition(Entity.motionX * TicksExisted, Entity.motionY * TicksExisted, Entity.motionZ * TicksExisted);
 
-		DriveRecord = new BlockRecord ( Package . DriveRecord ) ;
+            Entity.prevPosX = Entity.posX - Entity.motionX;
+            Entity.prevPosY = Entity.posY - Entity.motionY;
+            Entity.prevPosZ = Entity.posZ - Entity.motionZ;
+        }
+    }
 
-		if ( ! Package . DriveIsAnchored )
-		{
-			DriveRecord . Shift ( Package . MotionDirection ) ;
-		}
+    public java.util.ArrayList<CapturedEntity> CapturedEntities = new java.util.ArrayList<CapturedEntity>();
 
-		if ( Package . MotionDirection != null )
-		{
-			CaptureEntities ( Package . MinX , Package . MinY , Package . MinZ , Package . MaxX , Package . MaxY , Package . MaxZ ) ;
-		}
-	}
+    public boolean ShouldCaptureEntity(net.minecraft.entity.Entity Entity) {
+        if (Entity instanceof net.minecraft.entity.player.EntityPlayer) {
+            return (Configuration.CarriageMotion.CapturePlayerEntities);
+        }
 
-	@Override
-	public net . minecraft . util . AxisAlignedBB getRenderBoundingBox ( )
-	{
-		return ( INFINITE_EXTENT_AABB ) ;
-	}
+        if (Entity instanceof net.minecraft.entity.EntityLiving) {
+            return (Configuration.CarriageMotion.CaptureOtherLivingEntities);
+        }
 
-	@Override
-	public boolean shouldRenderInPass ( int Pass )
-	{
-		return ( true ) ;
-	}
+        if (Entity instanceof net.minecraft.entity.item.EntityItem) {
+            return (Configuration.CarriageMotion.CaptureItemEntities);
+        }
+
+        return (Configuration.CarriageMotion.CaptureOtherEntities);
+    }
+
+    public void ProcessCapturedEntity(net.minecraft.entity.Entity Entity) {
+        CapturedEntities.add(new CapturedEntity(Entity));
+    }
+
+    public void CaptureEntities(int MinX, int MinY, int MinZ, int MaxX, int MaxY, int MaxZ) {
+        net.minecraft.util.AxisAlignedBB EntityCaptureBox = net.minecraft.util.AxisAlignedBB.getBoundingBox(MinX - 5, MinY - 5, MinZ - 5, MaxX + 5, MaxY + 5, MaxZ + 5);
+
+        java.util.List EntitiesFound = worldObj.getEntitiesWithinAABB(net.minecraft.entity.Entity.class, EntityCaptureBox);
+
+        for (Object EntityObject : EntitiesFound) {
+            net.minecraft.entity.Entity Entity = (net.minecraft.entity.Entity) EntityObject;
+
+            BlockRecord PositionCheck = new BlockRecord((int) Math.floor(Entity.posX), (int) Math.floor(Entity.posY), (int) Math.floor(Entity.posZ));
+
+            if (!Body.contains(PositionCheck)) {
+                PositionCheck.Y--;
+
+                if (!Body.contains(PositionCheck)) {
+                    PositionCheck.Y--;
+
+                    if (!Body.contains(PositionCheck)) {
+                        Entity = null;
+                    }
+                }
+            }
+
+            if (Entity == null) {
+                continue;
+            }
+
+            if (ShouldCaptureEntity(Entity)) {
+                try {
+                    ProcessCapturedEntity(Entity);
+                } catch (Throwable Throwable) {
+                    Throwable.printStackTrace();
+                }
+            }
+        }
+    }
+
+    public void Absorb(CarriagePackage Package) {
+        MotionDirection = Package.MotionDirection;
+
+        Body = Package.Body;
+
+        RenderCacheKey = Package.RenderCacheKey;
+
+        PendingBlockUpdates = Package.PendingBlockUpdates;
+
+        DriveRecord = new BlockRecord(Package.DriveRecord);
+
+        if (!Package.DriveIsAnchored) {
+            DriveRecord.Shift(Package.MotionDirection);
+        }
+
+        if (Package.MotionDirection != null) {
+            CaptureEntities(Package.MinX, Package.MinY, Package.MinZ, Package.MaxX, Package.MaxY, Package.MaxZ);
+        }
+    }
+
+    @Override
+    public net.minecraft.util.AxisAlignedBB getRenderBoundingBox() {
+        return (INFINITE_EXTENT_AABB);
+    }
+
+    @Override
+    public boolean shouldRenderInPass(int Pass) {
+        return (true);
+    }
 }

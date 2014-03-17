@@ -1,77 +1,67 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class CarriageEntity extends TileEntity
-{
-	@Override
-	public boolean canUpdate ( )
-	{
-		return ( false ) ;
-	}
+public abstract class CarriageEntity extends TileEntity {
+    @Override
+    public boolean canUpdate() {
+        return (false);
+    }
 
-	public boolean [ ] SideClosed = new boolean [ Directions . values ( ) . length ] ;
+    public boolean[] SideClosed = new boolean[Directions.values().length];
 
-	public void ToggleSide ( int Side , boolean Sneaking )
-	{
-		if ( Sneaking )
-		{
-			Side = Directions . values ( ) [ Side ] . Opposite ( ) . ordinal ( ) ;
-		}
+    public void ToggleSide(int Side, boolean Sneaking) {
+        if (Sneaking) {
+            Side = Directions.values()[Side].Opposite().ordinal();
+        }
 
-		SideClosed [ Side ] = ! SideClosed [ Side ] ;
+        SideClosed[Side] = !SideClosed[Side];
 
-		Propagate ( ) ;
-	}
+        Propagate();
+    }
 
-	public int DecorationId ;
+    public int DecorationId;
 
-	public int DecorationMeta ;
+    public int DecorationMeta;
 
-	public int Tier ;
+    public int Tier;
 
-	@Override
-	public void Setup ( net . minecraft . entity . player . EntityPlayer Player , net . minecraft . item . ItemStack Item )
-	{
-		DecorationId = CarriageItem . GetDecorationId ( Item ) ;
+    @Override
+    public void Setup(net.minecraft.entity.player.EntityPlayer Player, net.minecraft.item.ItemStack Item) {
+        DecorationId = CarriageItem.GetDecorationId(Item);
 
-		DecorationMeta = CarriageItem . GetDecorationMeta ( Item ) ;
+        DecorationMeta = CarriageItem.GetDecorationMeta(Item);
 
-		Tier = CarriageItem . GetTier ( Item ) ;
-	}
+        Tier = CarriageItem.GetTier(Item);
+    }
 
-	@Override
-	public void EmitDrops ( Block Block , int Meta )
-	{
-		EmitDrop ( Block , CarriageItem . Stack ( Meta , Tier , DecorationId , DecorationMeta ) ) ;
-	}
+    @Override
+    public void EmitDrops(Block Block, int Meta) {
+        EmitDrop(Block, CarriageItem.Stack(Meta, Tier, DecorationId, DecorationMeta));
+    }
 
-	@Override
-	public void ReadCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		for ( int Index = 0 ; Index < SideClosed . length ; Index ++ )
-		{
-			SideClosed [ Index ] = TagCompound . getBoolean ( "SideClosed" + Index ) ;
-		}
+    @Override
+    public void ReadCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        for (int Index = 0; Index < SideClosed.length; Index++) {
+            SideClosed[Index] = TagCompound.getBoolean("SideClosed" + Index);
+        }
 
-		DecorationId = TagCompound . getInteger ( "DecorationId" ) ;
+        DecorationId = TagCompound.getInteger("DecorationId");
 
-		DecorationMeta = TagCompound . getInteger ( "DecorationMeta" ) ;
+        DecorationMeta = TagCompound.getInteger("DecorationMeta");
 
-		Tier = TagCompound . getInteger ( "Tier" ) ;
-	}
+        Tier = TagCompound.getInteger("Tier");
+    }
 
-	public void WriteCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		for ( int Index = 0 ; Index < SideClosed . length ; Index ++ )
-		{
-			TagCompound . setBoolean ( "SideClosed" + Index , SideClosed [ Index ] ) ;
-		}
+    public void WriteCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        for (int Index = 0; Index < SideClosed.length; Index++) {
+            TagCompound.setBoolean("SideClosed" + Index, SideClosed[Index]);
+        }
 
-		TagCompound . setInteger ( "DecorationId" , DecorationId ) ;
+        TagCompound.setInteger("DecorationId", DecorationId);
 
-		TagCompound . setInteger ( "DecorationMeta" , DecorationMeta ) ;
+        TagCompound.setInteger("DecorationMeta", DecorationMeta);
 
-		TagCompound . setInteger ( "Tier" , Tier ) ;
-	}
+        TagCompound.setInteger("Tier", Tier);
+    }
 
-	public abstract void FillPackage ( CarriagePackage Package ) throws CarriageMotionException ;
+    public abstract void FillPackage(CarriagePackage Package) throws CarriageMotionException;
 }

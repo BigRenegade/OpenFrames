@@ -1,51 +1,44 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class Core
-{
-	public static void HandlePreInit ( )
-	{
-	}
+public abstract class Core {
+    public static void HandlePreInit() {
+    }
 
-	public static void HandleInit ( )
-	{
-		ModInteraction . Establish ( ) ;
+    public static void HandleInit() {
+        ModInteraction.Establish();
 
-		CreativeTab . Prepare ( ) ;
+        CreativeTab.Prepare();
 
-		Blocks . Initialize ( ) ;
+        Blocks.Initialize();
 
-		Items . Initialize ( ) ;
+        Items.Initialize();
 
-		CreativeTab . Initialize ( Blocks . Carriage . blockID ) ;
-	}
+        CreativeTab.Initialize(Blocks.Carriage.blockID);
+    }
 
-	public static void HandlePostInit ( )
-	{
-		Recipes . Register ( ) ;
+    public static void HandlePostInit() {
+        Recipes.Register();
 
-		CarriagePackageBlacklist . Initialize ( ) ;
-	}
+        CarriagePackageBlacklist.Initialize();
+    }
 
-	public static void HandleServerStopping ( )
-	{
-		CarriageTranslocatorEntity . ActiveTranslocatorSets . clear ( ) ;
-	}
+    public static void HandleServerStopping() {
+        CarriageTranslocatorEntity.ActiveTranslocatorSets.clear();
+    }
 
-	public static void HandlePacket ( int Type , net . minecraft . nbt . NBTTagCompound Body , cpw . mods . fml . common . network . Player Player )
-	{
-		switch ( PacketTypes . values ( ) [ Type ] )
-		{
-			case Render :
+    public static void HandlePacket(int Type, net.minecraft.nbt.NBTTagCompound Body, cpw.mods.fml.common.network.Player Player) {
+        switch (PacketTypes.values()[Type]) {
+            case Render:
 
-				RenderPacket . Handle ( Body , ( ( net . minecraft . entity . player . EntityPlayer ) Player ) . worldObj ) ;
+                RenderPacket.Handle(Body, ((net.minecraft.entity.player.EntityPlayer) Player).worldObj);
 
-				break ;
+                break;
 
-			case MultipartPropagation :
+            case MultipartPropagation:
 
-				MultipartPropagationPacket . Handle ( Body , ( ( net . minecraft . entity . player . EntityPlayer ) Player ) . worldObj ) ;
+                MultipartPropagationPacket.Handle(Body, ((net.minecraft.entity.player.EntityPlayer) Player).worldObj);
 
-				break ;
-		}
-	}
+                break;
+        }
+    }
 }

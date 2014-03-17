@@ -1,19 +1,17 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class Blocks
-{
-	public static Carriage Carriage ;
+public abstract class Blocks {
+    public static Carriage Carriage;
 
-	public static CarriageDrive CarriageDrive ;
+    public static CarriageDrive CarriageDrive;
 
-	public static Spectre Spectre ;
+    public static Spectre Spectre;
 
-	public static void Initialize ( )
-	{
-		Carriage = new Carriage ( ) ;
+    public static void Initialize() {
+        Carriage = new Carriage();
 
-		CarriageDrive = new CarriageDrive ( ) ;
+        CarriageDrive = new CarriageDrive();
 
-		Spectre = new Spectre ( ) ;
-	}
+        Spectre = new Spectre();
+    }
 }

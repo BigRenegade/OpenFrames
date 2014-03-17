@@ -1,65 +1,52 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class Reflection
-{
-	public static boolean Verbose = false ;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 
-	public static Class EstablishClass ( String Name )
-	{
-		try
-		{
-			return ( Class . forName ( Name ) ) ;
-		}
-		catch ( Throwable Throwable )
-		{
-			if ( Verbose )
-			{
-				Throwable . printStackTrace ( ) ;
-			}
+public abstract class Reflection {
+    public static boolean Verbose = false;
 
-			return ( null ) ;
-		}
-	}
+    public static Class EstablishClass(String Name) {
+        try {
+            return (Class.forName(Name));
+        } catch (Throwable Throwable) {
+            if (Verbose) {
+                Throwable.printStackTrace();
+            }
 
-	public static java . lang . reflect . Method EstablishMethod ( Class Class , String Name , Class ... Arguments )
-	{
-		try
-		{
-			java . lang . reflect . Method Method = Class . getDeclaredMethod ( Name , Arguments ) ;
+            return (null);
+        }
+    }
 
-			Method . setAccessible ( true ) ;
+    public static java.lang.reflect.Method EstablishMethod(Class Class, String Name, Class... Arguments) {
+        try {
+            java.lang.reflect.Method Method = Class.getDeclaredMethod(Name, Arguments);
 
-			return ( Method ) ;
-		}
-		catch ( Throwable Throwable )
-		{
-			if ( Verbose )
-			{
-				Throwable . printStackTrace ( ) ;
-			}
+            Method.setAccessible(true);
 
-			return ( null ) ;
-		}
-	}
+            return (Method);
+        } catch (Throwable Throwable) {
+            if (Verbose) {
+                Throwable.printStackTrace();
+            }
 
-	public static java . lang . reflect . Field EstablishField ( Class Class , String Name )
-	{
-		try
-		{
-			java . lang . reflect . Field Field = Class . getDeclaredField ( Name ) ;
+            return (null);
+        }
+    }
 
-			Field . setAccessible ( true ) ;
+    public static java.lang.reflect.Field EstablishField(Class Class, String Name) {
+        try {
+            ReflectionHelper.findField(Class, Name);
+            java.lang.reflect.Field Field = Class.getDeclaredField(Name);
 
-			return ( Field ) ;
-		}
-		catch ( Throwable Throwable )
-		{
-			if ( Verbose )
-			{
-				Throwable . printStackTrace ( ) ;
-			}
+            Field.setAccessible(true);
 
-			return ( null ) ;
-		}
-	}
+            return (Field);
+        } catch (Throwable Throwable) {
+            if (Verbose) {
+                Throwable.printStackTrace();
+            }
+
+            return (null);
+        }
+    }
 }

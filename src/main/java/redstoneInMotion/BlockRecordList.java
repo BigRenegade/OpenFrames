@@ -1,5 +1,4 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class BlockRecordList extends java . util . ArrayList < BlockRecord >
-{
+public class BlockRecordList extends java.util.ArrayList<BlockRecord> {
 }

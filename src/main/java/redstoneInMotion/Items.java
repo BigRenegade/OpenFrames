@@ -1,15 +1,13 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class Items
-{
-	public static ToolItemSet ToolItemSet ;
+public abstract class Items {
+    public static ToolItemSet ToolItemSet;
 
-	public static SimpleItemSet SimpleItemSet ;
+    public static SimpleItemSet SimpleItemSet;
 
-	public static void Initialize ( )
-	{
-		ToolItemSet = new ToolItemSet ( ) ;
+    public static void Initialize() {
+        ToolItemSet = new ToolItemSet();
 
-		SimpleItemSet = new SimpleItemSet ( ) ;
-	}
+        SimpleItemSet = new SimpleItemSet();
+    }
 }

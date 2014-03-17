@@ -1,245 +1,207 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class CarriageTranslocatorEntity extends CarriageDriveEntity
-{
-	public String Player ;
+public class CarriageTranslocatorEntity extends CarriageDriveEntity {
+    public String Player;
 
-	public int Label ;
+    public int Label;
 
-	public static java . util . HashMap < String , java . util . HashMap < Integer , java . util . LinkedList < BlockPosition > > > ActiveTranslocatorSets
-		= new java . util . HashMap < String , java . util . HashMap < Integer , java . util . LinkedList < BlockPosition > > > ( ) ;
+    public static java.util.HashMap<String, java.util.HashMap<Integer, java.util.LinkedList<BlockPosition>>> ActiveTranslocatorSets
+            = new java.util.HashMap<String, java.util.HashMap<Integer, java.util.LinkedList<BlockPosition>>>();
 
-	public void RegisterLabel ( )
-	{
-		java . util . HashMap < Integer , java . util . LinkedList < BlockPosition > > ActiveTranslocatorSet = ActiveTranslocatorSets . get ( Player ) ;
+    public void RegisterLabel() {
+        java.util.HashMap<Integer, java.util.LinkedList<BlockPosition>> ActiveTranslocatorSet = ActiveTranslocatorSets.get(Player);
 
-		if ( ActiveTranslocatorSet == null )
-		{
-			ActiveTranslocatorSet = new java . util . HashMap < Integer , java . util . LinkedList < BlockPosition > > ( ) ;
+        if (ActiveTranslocatorSet == null) {
+            ActiveTranslocatorSet = new java.util.HashMap<Integer, java.util.LinkedList<BlockPosition>>();
 
-			ActiveTranslocatorSets . put ( Player , ActiveTranslocatorSet ) ;
-		}
+            ActiveTranslocatorSets.put(Player, ActiveTranslocatorSet);
+        }
 
-		java . util . LinkedList < BlockPosition > ActiveTranslocators = ActiveTranslocatorSet . get ( Label ) ;
+        java.util.LinkedList<BlockPosition> ActiveTranslocators = ActiveTranslocatorSet.get(Label);
 
-		if ( ActiveTranslocators == null )
-		{
-			ActiveTranslocators = new java . util . LinkedList < BlockPosition > ( ) ;
+        if (ActiveTranslocators == null) {
+            ActiveTranslocators = new java.util.LinkedList<BlockPosition>();
 
-			ActiveTranslocatorSet . put ( Label , ActiveTranslocators ) ;
-		}
+            ActiveTranslocatorSet.put(Label, ActiveTranslocators);
+        }
 
-		ActiveTranslocators . add ( GeneratePositionObject ( ) ) ;
-	}
+        ActiveTranslocators.add(GeneratePositionObject());
+    }
 
-	public void ClearLabel ( )
-	{
-		try
-		{
-			ActiveTranslocatorSets . get ( Player ) . get ( Label ) . remove ( GeneratePositionObject ( ) ) ;
-		}
-		catch ( Throwable Throwable )
-		{
-			Throwable . printStackTrace ( ) ;
-		}
-	}
+    public void ClearLabel() {
+        try {
+            ActiveTranslocatorSets.get(Player).get(Label).remove(GeneratePositionObject());
+        } catch (Throwable Throwable) {
+            Throwable.printStackTrace();
+        }
+    }
 
-	@Override
-	public void Setup ( net . minecraft . entity . player . EntityPlayer Player , net . minecraft . item . ItemStack Item )
-	{
-		super . Setup ( Player , Item ) ;
+    @Override
+    public void Setup(net.minecraft.entity.player.EntityPlayer Player, net.minecraft.item.ItemStack Item) {
+        super.Setup(Player, Item);
 
-		this . Player = CarriageDriveItem . GetPrivateFlag ( Item ) ? Player . username : "" ;
-		
-		Label = CarriageDriveItem . GetLabel ( Item ) ;
+        this.Player = CarriageDriveItem.GetPrivateFlag(Item) ? Player.username : "";
 
-		if ( ! worldObj . isRemote )
-		{
+        Label = CarriageDriveItem.GetLabel(Item);
 
-			RegisterLabel ( ) ;
+        if (!worldObj.isRemote) {
+
+            RegisterLabel();
 
 			/* dirty hack needed for unknown reason */
-			{
-				ClearLabel ( ) ;
+            {
+                ClearLabel();
 
-				RegisterLabel ( ) ;
-			}
-		}
-	}
+                RegisterLabel();
+            }
+        }
+    }
 
-	@Override
-	public void EmitDrops ( Block Block , int Meta )
-	{
-		EmitDrop ( Block , CarriageDriveItem . Stack ( Meta , Tier , ! Player . equals ( "" ) , Label ) ) ;
-	}
+    @Override
+    public void EmitDrops(Block Block, int Meta) {
+        EmitDrop(Block, CarriageDriveItem.Stack(Meta, Tier, !Player.equals(""), Label));
+    }
 
-	@Override
-	public void Initialize ( )
-	{
-		super . Initialize ( ) ;
+    @Override
+    public void Initialize() {
+        super.Initialize();
 
-		if ( ! worldObj . isRemote )
-		{
-			if ( Player != null )
-			{
-				RegisterLabel ( ) ;
-			}
-		}
-	}
+        if (!worldObj.isRemote) {
+            if (Player != null) {
+                RegisterLabel();
+            }
+        }
+    }
 
-	@Override
-	public void Finalize ( )
-	{
-		if ( ! worldObj . isRemote )
-		{
-			ClearLabel ( ) ;
-		}
-	}
+    @Override
+    public void Finalize() {
+        if (!worldObj.isRemote) {
+            ClearLabel();
+        }
+    }
 
-	@Override
-	public void ReadCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		super . ReadCommonRecord ( TagCompound ) ;
+    @Override
+    public void ReadCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        super.ReadCommonRecord(TagCompound);
 
-		Player = TagCompound . getString ( "Player" ) ;
-		
-		Label = TagCompound . getInteger ( "Label" ) ;
-	}
+        Player = TagCompound.getString("Player");
 
-	@Override
-	public void WriteCommonRecord ( net . minecraft . nbt . NBTTagCompound TagCompound )
-	{
-		super . WriteCommonRecord ( TagCompound ) ;
+        Label = TagCompound.getInteger("Label");
+    }
 
-		TagCompound . setString ( "Player" , Player ) ;
+    @Override
+    public void WriteCommonRecord(net.minecraft.nbt.NBTTagCompound TagCompound) {
+        super.WriteCommonRecord(TagCompound);
 
-		TagCompound . setInteger ( "Label" , Label ) ;
-	}
+        TagCompound.setString("Player", Player);
 
-	@Override
-	public boolean Anchored ( )
-	{
-		return ( true ) ;
-	}
+        TagCompound.setInteger("Label", Label);
+    }
 
-	@Override
-	public CarriagePackage PreparePackage ( Directions MotionDirection ) throws CarriageMotionException
-	{
-		CarriagePackage Package = super . PreparePackage ( null ) ;
+    @Override
+    public boolean Anchored() {
+        return (true);
+    }
 
-		CarriageTranslocatorEntity Target = null ;
+    @Override
+    public CarriagePackage PreparePackage(Directions MotionDirection) throws CarriageMotionException {
+        CarriagePackage Package = super.PreparePackage(null);
 
-		java . util . LinkedList < BlockPosition > ActiveTranslocators ;
-		
-		try
-		{
-			ActiveTranslocators = ActiveTranslocatorSets . get ( Player ) . get ( Label ) ;
-		}
-		catch ( Throwable Throwable )
-		{
-			Throwable . printStackTrace ( ) ;
+        CarriageTranslocatorEntity Target = null;
 
-			throw ( new CarriageMotionException ( "translocator array is corrupt" ) ) ;
-		}
+        java.util.LinkedList<BlockPosition> ActiveTranslocators;
 
-		for ( int Index = 0 ; Index < ActiveTranslocators . size ( ) ; Index ++ )
-		{
-			BlockPosition Position = ActiveTranslocators . get ( Index ) ;
+        try {
+            ActiveTranslocators = ActiveTranslocatorSets.get(Player).get(Label);
+        } catch (Throwable Throwable) {
+            Throwable.printStackTrace();
 
-			try
-			{
-				CarriageTranslocatorEntity Translocator = ( CarriageTranslocatorEntity ) WorldUtil . GetWorld ( Position . Dimension ) . getBlockTileEntity ( Position . X , Position . Y , Position . Z ) ;
+            throw (new CarriageMotionException("translocator array is corrupt"));
+        }
 
-				if ( Translocator == this )
-				{
-					continue ;
-				}
+        for (int Index = 0; Index < ActiveTranslocators.size(); Index++) {
+            BlockPosition Position = ActiveTranslocators.get(Index);
 
-				boolean TargetValid = true ;
+            try {
+                CarriageTranslocatorEntity Translocator = (CarriageTranslocatorEntity) WorldUtil.GetWorld(Position.Dimension).getBlockTileEntity(Position.X, Position.Y, Position.Z);
 
-				for ( BlockRecord Record : Package . NewPositions )
-				{
-					if ( ! Translocator . worldObj . isAirBlock ( Record . X + Translocator . xCoord , Record . Y + Translocator . yCoord , Record . Z + Translocator . zCoord ) )
-					{
-						TargetValid = false ;
+                if (Translocator == this) {
+                    continue;
+                }
 
-						break ;
-					}
-				}
+                boolean TargetValid = true;
 
-				if ( TargetValid )
-				{
-					Target = Translocator ;
+                for (BlockRecord Record : Package.NewPositions) {
+                    if (!Translocator.worldObj.isAirBlock(Record.X + Translocator.xCoord, Record.Y + Translocator.yCoord, Record.Z + Translocator.zCoord)) {
+                        TargetValid = false;
 
-					break ;
-				}
-			}
-			catch ( Throwable Throwable )
-			{
-				Throwable . printStackTrace ( ) ;
-			}
-		}
+                        break;
+                    }
+                }
 
-		if ( Target == null )
-		{
-			throw ( new CarriageMotionException ( "no other matching translocators available with space to receive carriage assembly" ) ) ;
-		}
+                if (TargetValid) {
+                    Target = Translocator;
 
-		Package . Translocator = Target ;
+                    break;
+                }
+            } catch (Throwable Throwable) {
+                Throwable.printStackTrace();
+            }
+        }
 
-		return ( Package ) ;
-	}
+        if (Target == null) {
+            throw (new CarriageMotionException("no other matching translocators available with space to receive carriage assembly"));
+        }
 
-	@Override
-	public CarriagePackage GeneratePackage ( CarriageEntity Carriage , Directions CarriageDirection , Directions MotionDirection ) throws CarriageMotionException
-	{
-		CarriagePackage Package = new CarriagePackage ( this , Carriage , null ) ;
+        Package.Translocator = Target;
 
-		Carriage . FillPackage ( Package ) ;
+        return (Package);
+    }
 
-		if ( Package . Body . contains ( Package . DriveRecord ) )
-		{
-			throw ( new CarriageMotionException ( "carriage is attempting to grab translocator" ) ) ;
-		}
+    @Override
+    public CarriagePackage GeneratePackage(CarriageEntity Carriage, Directions CarriageDirection, Directions MotionDirection) throws CarriageMotionException {
+        CarriagePackage Package = new CarriagePackage(this, Carriage, null);
 
-		Package . Finalize ( ) ;
+        Carriage.FillPackage(Package);
 
-		return ( Package ) ;
-	}
+        if (Package.Body.contains(Package.DriveRecord)) {
+            throw (new CarriageMotionException("carriage is attempting to grab translocator"));
+        }
 
-	@Override
-	public void InitiateMotion ( CarriagePackage Package )
-	{
-		Package . Translocator . ToggleActivity ( ) ;
+        Package.Finalize();
 
-		super . InitiateMotion ( Package ) ;
-	}
+        return (Package);
+    }
 
-	@Override
-	public void EstablishPlaceholders ( CarriagePackage Package )
-	{
-		for ( BlockRecord Record : Package . NewPositions )
-		{
-			SneakyWorldUtil . SetBlock ( worldObj , Record . X + xCoord , Record . Y + yCoord , Record . Z + zCoord , Blocks . Spectre . blockID , Spectre . Types . Supportive . ordinal ( ) ) ;
+    @Override
+    public void InitiateMotion(CarriagePackage Package) {
+        Package.Translocator.ToggleActivity();
 
-			SneakyWorldUtil . SetBlock ( Package . Translocator . worldObj , Record . X + Package . Translocator . xCoord , Record . Y + Package . Translocator . yCoord , Record . Z + Package . Translocator . zCoord ,
-				Blocks . Spectre . blockID , Spectre . Types . Supportive . ordinal ( ) ) ;
-		}
-	}
+        super.InitiateMotion(Package);
+    }
 
-	@Override
-	public void EstablishSpectre ( CarriagePackage Package )
-	{
-		WorldUtil . SetBlock ( worldObj , Package . AnchorRecord . X , Package . AnchorRecord . Y , Package . AnchorRecord . Z , Blocks . Spectre . blockID , Spectre . Types . Teleportative . ordinal ( ) ) ;
+    @Override
+    public void EstablishPlaceholders(CarriagePackage Package) {
+        for (BlockRecord Record : Package.NewPositions) {
+            SneakyWorldUtil.SetBlock(worldObj, Record.X + xCoord, Record.Y + yCoord, Record.Z + zCoord, Blocks.Spectre.blockID, Spectre.Types.Supportive.ordinal());
 
-		( ( TeleportativeSpectreEntity ) worldObj . getBlockTileEntity ( Package . AnchorRecord . X , Package . AnchorRecord . Y , Package . AnchorRecord . Z ) ) . AbsorbSource ( Package ) ;
+            SneakyWorldUtil.SetBlock(Package.Translocator.worldObj, Record.X + Package.Translocator.xCoord, Record.Y + Package.Translocator.yCoord, Record.Z + Package.Translocator.zCoord,
+                    Blocks.Spectre.blockID, Spectre.Types.Supportive.ordinal());
+        }
+    }
 
-		int NewX = Package . AnchorRecord . X - xCoord + Package . Translocator . xCoord ;
-		int NewY = Package . AnchorRecord . Y - yCoord + Package . Translocator . yCoord ;
-		int NewZ = Package . AnchorRecord . Z - zCoord + Package . Translocator . zCoord ;
+    @Override
+    public void EstablishSpectre(CarriagePackage Package) {
+        WorldUtil.SetBlock(worldObj, Package.AnchorRecord.X, Package.AnchorRecord.Y, Package.AnchorRecord.Z, Blocks.Spectre.blockID, Spectre.Types.Teleportative.ordinal());
 
-		WorldUtil . SetBlock ( Package . Translocator . worldObj , NewX , NewY , NewZ , Blocks . Spectre . blockID , Spectre . Types . Teleportative . ordinal ( ) ) ;
+        ((TeleportativeSpectreEntity) worldObj.getBlockTileEntity(Package.AnchorRecord.X, Package.AnchorRecord.Y, Package.AnchorRecord.Z)).AbsorbSource(Package);
 
-		( ( TeleportativeSpectreEntity ) Package . Translocator . worldObj . getBlockTileEntity ( NewX , NewY , NewZ ) ) . AbsorbSink ( Package ) ;
-	}
+        int NewX = Package.AnchorRecord.X - xCoord + Package.Translocator.xCoord;
+        int NewY = Package.AnchorRecord.Y - yCoord + Package.Translocator.yCoord;
+        int NewZ = Package.AnchorRecord.Z - zCoord + Package.Translocator.zCoord;
+
+        WorldUtil.SetBlock(Package.Translocator.worldObj, NewX, NewY, NewZ, Blocks.Spectre.blockID, Spectre.Types.Teleportative.ordinal());
+
+        ((TeleportativeSpectreEntity) Package.Translocator.worldObj.getBlockTileEntity(NewX, NewY, NewZ)).AbsorbSink(Package);
+    }
 }

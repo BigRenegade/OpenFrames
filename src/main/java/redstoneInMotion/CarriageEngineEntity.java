@@ -1,29 +1,25 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public class CarriageEngineEntity extends CarriageDriveEntity
-{
-	@Override
-	public CarriagePackage GeneratePackage ( CarriageEntity Carriage , Directions CarriageDirection , Directions MotionDirection ) throws CarriageMotionException
-	{
-		CarriagePackage Package = new CarriagePackage ( this , Carriage , MotionDirection ) ;
+public class CarriageEngineEntity extends CarriageDriveEntity {
+    @Override
+    public CarriagePackage GeneratePackage(CarriageEntity Carriage, Directions CarriageDirection, Directions MotionDirection) throws CarriageMotionException {
+        CarriagePackage Package = new CarriagePackage(this, Carriage, MotionDirection);
 
-		Package . AddBlock ( Package . DriveRecord ) ;
+        Package.AddBlock(Package.DriveRecord);
 
-		if ( MotionDirection != CarriageDirection )
-		{
-			Package . AddPotentialObstruction ( Package . DriveRecord . NextInDirection ( MotionDirection ) ) ;
-		}
+        if (MotionDirection != CarriageDirection) {
+            Package.AddPotentialObstruction(Package.DriveRecord.NextInDirection(MotionDirection));
+        }
 
-		Carriage . FillPackage ( Package ) ;
+        Carriage.FillPackage(Package);
 
-		Package . Finalize ( ) ;
+        Package.Finalize();
 
-		return ( Package ) ;
-	}
+        return (Package);
+    }
 
-	@Override
-	public boolean Anchored ( )
-	{
-		return ( false ) ;
-	}
+    @Override
+    public boolean Anchored() {
+        return (false);
+    }
 }

@@ -1,43 +1,36 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class Item extends net . minecraft . item . Item
-{
-	public Item ( int Id )
-	{
-		super ( Id ) ;
+public abstract class Item extends net.minecraft.item.Item {
+    public Item(int Id) {
+        super(Id);
 
-		setUnlocalizedName ( Mod . Handle + "_" + getClass ( ) . getSimpleName ( ) ) ;
+        setUnlocalizedName(Mod.Handle + "_" + getClass().getSimpleName());
 
-		setHasSubtypes ( true ) ;
+        setHasSubtypes(true);
 
-		setCreativeTab ( CreativeTab . Instance ) ;
+        setCreativeTab(CreativeTab.Instance);
 
-		cpw . mods . fml . common . registry . GameRegistry . registerItem ( this , getUnlocalizedName ( ) , Mod . Handle ) ;
-	}
+        cpw.mods.fml.common.registry.GameRegistry.registerItem(this, getUnlocalizedName(), Mod.Handle);
+    }
 
-	public void AddShowcaseStacks ( java . util . List Showcase )
-	{
-	}
+    public void AddShowcaseStacks(java.util.List Showcase) {
+    }
 
-	@Override
-	public void getSubItems ( int Id , net . minecraft . creativetab . CreativeTabs CreativeTab , java . util . List Showcase )
-	{
-		AddShowcaseStacks ( Showcase ) ;
-	}
+    @Override
+    public void getSubItems(int Id, net.minecraft.creativetab.CreativeTabs CreativeTab, java.util.List Showcase) {
+        AddShowcaseStacks(Showcase);
+    }
 
-	public void AddTooltip ( net . minecraft . item . ItemStack Item , java . util . List TooltipLines )
-	{
-	}
+    public void AddTooltip(net.minecraft.item.ItemStack Item, java.util.List TooltipLines) {
+    }
 
-	@Override
-	public void addInformation ( net . minecraft . item . ItemStack Item , net . minecraft . entity . player . EntityPlayer Player , java . util . List TooltipLines , boolean Advanced )
-	{
-		AddTooltip ( Item , TooltipLines ) ;
-	}
+    @Override
+    public void addInformation(net.minecraft.item.ItemStack Item, net.minecraft.entity.player.EntityPlayer Player, java.util.List TooltipLines, boolean Advanced) {
+        AddTooltip(Item, TooltipLines);
+    }
 
-	@Override
-	public boolean shouldPassSneakingClickToBlock ( net . minecraft . world . World World , int X , int Y , int Z )
-	{
-		return ( true ) ;
-	}
+    @Override
+    public boolean shouldPassSneakingClickToBlock(net.minecraft.world.World World, int X, int Y, int Z) {
+        return (true);
+    }
 }

@@ -1,108 +1,101 @@
-package redstoneInMotion ;
+package redstoneInMotion;
 
-public abstract class SneakyWorldUtil
-{
-	public static void SetBlock ( net . minecraft . world . World World , int X , int Y , int Z , int Id , int Meta )
-	{
-		net . minecraft . world . chunk . Chunk Chunk = World . getChunkFromBlockCoords ( X , Z ) ;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
-		int ChunkX = X & 0xF ;
-		int ChunkY = Y & 0xF ;
-		int ChunkZ = Z & 0xF ;
+public abstract class SneakyWorldUtil {
+    public static void SetBlock(net.minecraft.world.World World, int X, int Y, int Z, int Id, int Meta) {
+        net.minecraft.world.chunk.Chunk Chunk = World.getChunkFromBlockCoords(X, Z);
 
-		Chunk . removeChunkBlockTileEntity ( ChunkX , Y , ChunkZ ) ;
+        int ChunkX = X & 0xF;
+        int ChunkY = Y & 0xF;
+        int ChunkZ = Z & 0xF;
 
-		int LayerY = Y >> 4 ;
+        Chunk.removeChunkBlockTileEntity(ChunkX, Y, ChunkZ);
 
-		if ( Chunk . storageArrays [ LayerY ] == null )
-		{
-			Chunk . storageArrays [ LayerY ] = new net . minecraft . world . chunk . storage . ExtendedBlockStorage ( ( LayerY ) << 4 , ! World . provider . hasNoSky ) ;
-		}
+        int LayerY = Y >> 4;
 
-		Chunk . storageArrays [ LayerY ] . setExtBlockID ( ChunkX , ChunkY , ChunkZ , Id ) ;
+        try {
+            final ExtendedBlockStorage[] arrays = (ExtendedBlockStorage[]) Reflection.EstablishField(net.minecraft.world.chunk.Chunk.class, "storageArrays").get(Chunk);
+            if (arrays[LayerY] == null) {
+                arrays[LayerY] = new net.minecraft.world.chunk.storage.ExtendedBlockStorage((LayerY) << 4, !World.provider.hasNoSky);
+            }
+            arrays[LayerY].setExtBlockID(ChunkX, ChunkY, ChunkZ, Id);
+            arrays[LayerY].setExtBlockMetadata(ChunkX, ChunkY, ChunkZ, Meta);
+        } catch (Throwable ignore) {
+        }
 
-		Chunk . storageArrays [ LayerY ] . setExtBlockMetadata ( ChunkX , ChunkY , ChunkZ , Meta ) ;
+        Chunk.isModified = true;
 
-		Chunk . isModified = true ;
+        World.markBlockForUpdate(X, Y, Z);
+    }
 
-		World . markBlockForUpdate ( X , Y , Z ) ;
-	}
+    public static void SetTileEntity(net.minecraft.world.World World, int X, int Y, int Z, net.minecraft.tileentity.TileEntity Entity) {
+        World.addTileEntity(Entity);
 
-	public static void SetTileEntity ( net . minecraft . world . World World , int X , int Y , int Z , net . minecraft . tileentity . TileEntity Entity )
-	{
-		if ( World . scanningTileEntities )
-		{
-			World . addedTileEntityList . add ( Entity ) ;
-		}
-		else
-		{
-			World . loadedTileEntityList . add ( Entity ) ;
-		}
+        World.getChunkFromBlockCoords(X, Z).setChunkBlockTileEntity(X & 0xF, Y, Z & 0xF, Entity);
+    }
 
-		World . getChunkFromBlockCoords ( X , Z ) . setChunkBlockTileEntity ( X & 0xF , Y , Z & 0xF , Entity ) ;
-	}
+    /* out of context, this is woefully redundant and inefficient, and really needs to be fixed */
+    public static void UpdateLighting(net.minecraft.world.World World, int X, int Y, int Z) {
+        net.minecraft.world.chunk.Chunk Chunk = World.getChunkFromBlockCoords(X, Z);
 
-	/* out of context, this is woefully redundant and inefficient, and really needs to be fixed */
-	public static void UpdateLighting ( net . minecraft . world . World World , int X , int Y , int Z )
-	{
-		net . minecraft . world . chunk . Chunk Chunk = World . getChunkFromBlockCoords ( X , Z ) ;
+        int ChunkX = X & 0xF;
+        int ChunkY = Y & 0xF;
+        int ChunkZ = Z & 0xF;
 
-		int ChunkX = X & 0xF ;
-		int ChunkY = Y & 0xF ;
-		int ChunkZ = Z & 0xF ;
+        int HeightMapIndex = ChunkZ << 4 | ChunkX;
 
-		int HeightMapIndex = ChunkZ << 4 | ChunkX ;
+        if (Y >= Chunk.precipitationHeightMap[HeightMapIndex] - 1) {
+            Chunk.precipitationHeightMap[HeightMapIndex] = -999;
+        }
 
-		if ( Y >= Chunk . precipitationHeightMap [ HeightMapIndex ] - 1 )
-		{
-			Chunk . precipitationHeightMap [ HeightMapIndex ] = -999 ;
-		}
+        int HeightMapValue = Chunk.heightMap[HeightMapIndex];
 
-		int HeightMapValue = Chunk . heightMap [ HeightMapIndex ] ;
+        if (Y >= HeightMapValue) {
+            Chunk.generateSkylightMap();
+        } else {
+            if (Chunk.getBlockLightOpacity(ChunkX, Y, ChunkZ) > 0) {
+                if (Y >= HeightMapValue) {
+//                  Chunk.relightBlock(ChunkX, Y + 1, ChunkZ);
+                    try {
+                        Reflection.EstablishMethod(net.minecraft.world.chunk.Chunk.class, "relightBlock", int.class, int.class, int.class).invoke(Chunk, ChunkX, Y + 1, ChunkZ);
+                    } catch (Throwable ignore) {
+                    }
+                }
+            } else if (Y == HeightMapValue - 1) {
+//              Chunk.relightBlock(ChunkX, Y, ChunkZ);
+                try {
+                    Reflection.EstablishMethod(net.minecraft.world.chunk.Chunk.class, "relightBlock", int.class, int.class, int.class).invoke(Chunk, ChunkX, Y, ChunkZ);
+                } catch (Throwable ignore) {
+                }
 
-		if ( Y >= HeightMapValue )
-		{
-			Chunk . generateSkylightMap ( ) ;
-		}
-		else
-		{
-			if ( Chunk . getBlockLightOpacity ( ChunkX , Y , ChunkZ ) > 0 )
-			{
-				if ( Y >= HeightMapValue )
-				{
-					Chunk . relightBlock ( ChunkX , Y + 1 , ChunkZ ) ;
-				}
-			}
-			else if ( Y == HeightMapValue - 1 )
-			{
-				Chunk . relightBlock ( ChunkX , Y , ChunkZ ) ;
-			}
+            }
 
-			Chunk . propagateSkylightOcclusion ( ChunkX , ChunkZ ) ;
-		}
+//          Chunk.propagateSkylightOcclusion(ChunkX, ChunkZ);
+            try {
+                Reflection.EstablishMethod(net.minecraft.world.chunk.Chunk.class, "propagateSkylightOcclusion", int.class, int.class).invoke(Chunk, ChunkX, ChunkZ);
+            } catch (Throwable ignore) {
+            }
+        }
 
-		World . updateAllLightTypes ( X , Y , Z ) ;
-	}
+        World.updateAllLightTypes(X, Y, Z);
+    }
 
-	public static void NotifyBlocks ( net . minecraft . world . World World , int X , int Y , int Z , int OldId , int NewId )
-	{
-		World . notifyBlockChange ( X , Y , Z , OldId ) ;
+    public static void NotifyBlocks(net.minecraft.world.World World, int X, int Y, int Z, int OldId, int NewId) {
+        World.notifyBlockChange(X, Y, Z, OldId);
 
-		if ( NewId == 0 )
-		{
-			return ;
-		}
+        if (NewId == 0) {
+            return;
+        }
 
-		if ( ( World . getBlockTileEntity ( X , Y , Z ) != null ) || ( Block . Get ( NewId ) . hasComparatorInputOverride ( ) ) )
-		{
-			World . func_96440_m ( X , Y , Z , NewId ) ;
-		}
-	}
+        if ((World.getBlockTileEntity(X, Y, Z) != null) || (Block.Get(NewId).hasComparatorInputOverride())) {
+            World.func_96440_m(X, Y, Z, NewId);
+        }
+    }
 
-	public static void RefreshBlock ( net . minecraft . world . World World , int X , int Y , int Z , int OldId , int NewId )
-	{
-		UpdateLighting ( World , X , Y , Z ) ;
+    public static void RefreshBlock(net.minecraft.world.World World, int X, int Y, int Z, int OldId, int NewId) {
+        UpdateLighting(World, X, Y, Z);
 
-		NotifyBlocks ( World , X , Y , Z , OldId , NewId ) ;
-	}
+        NotifyBlocks(World, X, Y, Z, OldId, NewId);
+    }
 }

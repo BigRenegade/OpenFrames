@@ -54,6 +54,7 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
     public int ObstructionX;
     public int ObstructionY;
     public int ObstructionZ;
+    public Runnable delayedCall;
 
     @Override
     public void HandleToolUsage(int Side, boolean Sneaking) {
@@ -87,6 +88,11 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
             }
         }
         MotionDirection = null;
+
+        if (delayedCall != null) {
+            delayedCall.run();
+            delayedCall = null;
+        }
         notify();
     }
 
@@ -156,7 +162,7 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
     }
 
 
-    public synchronized Object[] callMethod(int MethodIndex, Object[] Arguments) throws Exception {
+    public synchronized void callMethod(int MethodIndex, Object[] Arguments) throws Exception {
         switch (ComputerMethod.values()[MethodIndex]) {
             case move:
                 if (Arguments.length != 3) {
@@ -204,25 +210,6 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
         Error = null;
 
         Obstructed = false;
-
-        try {
-            do {
-                wait();
-            }
-            while (MotionDirection != null);
-        } catch (Throwable Throwable) {
-            throw (new Exception(Throwable));
-        }
-
-        if (Error == null) {
-            return (new Object[]{true});
-        }
-
-        if (Obstructed == false) {
-            return (new Object[]{false, Error.getMessage()});
-        }
-
-        return (new Object[]{false, Error.getMessage(), ObstructionX, ObstructionY, ObstructionZ});
     }
 
     public void Move() throws CarriageMotionException {
@@ -319,9 +306,27 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
     @Override
     public Object[] callMethod(IComputerAccess Computer, ILuaContext LuaContext,
                                int MethodIndex, Object[] Arguments) throws Exception {
-        return (callMethod(MethodIndex, Arguments));
-    }
+        callMethod(MethodIndex, Arguments);
 
+        try {
+            do {
+                wait();
+            }
+            while (MotionDirection != null);
+        } catch (Throwable Throwable) {
+            throw (new Exception(Throwable));
+        }
+
+        if (Error == null) {
+            return (new Object[]{true});
+        }
+
+        if (!Obstructed) {
+            return (new Object[]{false, Error.getMessage()});
+        }
+
+        return (new Object[]{false, Error.getMessage(), ObstructionX, ObstructionY, ObstructionZ});
+    }
 
     // OpenComputers
 
@@ -351,7 +356,27 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
         if (methodId == null) {
             throw new NoSuchMethodError();
         }
-        return callMethod(methodId, arguments);
+        delayedCall = new Runnable() {
+            @Override
+            public void run() {
+                if (Error == null) {
+                    // TODO The computer has already been saved when we get here
+                    // so we have to come up with some other way to tell the
+                    // computer that the command was a success *after* the move.
+                    // Possibly by saving a flag in this tile entity's nbt tag,
+                    // but I don't know how RiM saves the command block itself.
+//                    context.signal("carriage_moved", true);
+                }
+                else if (!Obstructed) {
+                    context.signal("carriage_moved", false, Error.getMessage());
+                }
+                else {
+                    context.signal("carriage_moved", false, Error.getMessage(), ObstructionX, ObstructionY, ObstructionZ);
+                }
+            }
+        };
+        callMethod(methodId, arguments);
+        return new Object[]{true};
     }
 
 }

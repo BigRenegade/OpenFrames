@@ -157,60 +157,48 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
 
 
     public synchronized Object[] callMethod(int MethodIndex, Object[] Arguments) throws Exception {
-        try {
-            switch (ComputerMethod.values()[MethodIndex]) {
-                case move:
+        switch (ComputerMethod.values()[MethodIndex]) {
+            case move:
+                if (Arguments.length != 3) {
+                    throw (new Exception("usage:  move('direction', true/false, true/false)"));
+                }
+                SetupMotion(ParseDirectionArgument(Arguments[0]), ParseBooleanArgument(Arguments[1], "simulation"), ParseBooleanArgument(Arguments[2], "anchoring"));
 
-                    if (Arguments.length != 3) {
-                        throw (new Exception("usage:  move('direction', true/false, true/false)"));
-                    }
+                break;
 
-                    SetupMotion(ParseDirectionArgument(Arguments[0]), ParseBooleanArgument(Arguments[1], "simulation"), ParseBooleanArgument(Arguments[2], "anchoring"));
+            case anchored_move:
+                if (Arguments.length != 1) {
+                    throw (new Exception("usage:  anchored_move('direction')"));
+                }
+                SetupMotion(ParseDirectionArgument(Arguments[0]), false, true);
 
-                    break;
+                break;
 
-                case anchored_move:
+            case check_anchored_move:
+                if (Arguments.length != 1) {
+                    throw (new Exception("usage:  check_anchored_move('direction')"));
+                }
+                SetupMotion(ParseDirectionArgument(Arguments[0]), true, true);
 
-                    if (Arguments.length != 1) {
-                        throw (new Exception("usage:  anchored_move('direction')"));
-                    }
+                break;
 
-                    SetupMotion(ParseDirectionArgument(Arguments[0]), false, true);
+            case unanchored_move:
+                if (Arguments.length != 1) {
+                    throw (new Exception("usage:  unanchored_move('direction')"));
+                }
+                SetupMotion(ParseDirectionArgument(Arguments[0]), false, false);
 
-                    break;
+                break;
 
-                case check_anchored_move:
+            case check_unanchored_move:
+                if (Arguments.length != 1) {
+                    throw (new Exception("usage:  check_unanchored_move('direction')"));
+                }
+                SetupMotion(ParseDirectionArgument(Arguments[0]), true, false);
 
-                    if (Arguments.length != 1) {
-                        throw (new Exception("usage:  check_anchored_move('direction')"));
-                    }
-
-                    SetupMotion(ParseDirectionArgument(Arguments[0]), true, true);
-
-                    break;
-
-                case unanchored_move:
-
-                    if (Arguments.length != 1) {
-                        throw (new Exception("usage:  unanchored_move('direction')"));
-                    }
-
-                    SetupMotion(ParseDirectionArgument(Arguments[0]), false, false);
-
-                    break;
-
-                case check_unanchored_move:
-
-                    if (Arguments.length != 1) {
-                        throw (new Exception("usage:  check_unanchored_move('direction')"));
-                    }
-
-                    SetupMotion(ParseDirectionArgument(Arguments[0]), true, false);
-
-                    break;
-            }
-        } catch (Throwable Throwable) {
-            throw (new Exception("no such command"));
+                break;
+            default:
+                throw (new Exception("no such command"));
         }
 
         Error = null;
@@ -337,13 +325,12 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
 
     // OpenComputers
 
-
     @Override
     @Optional.Method(modid = "OpenComputers")
     public String getComponentName() {
         // Convention for OC names is a) lower case, b) valid variable names,
         // so this can be used as `component.br_reactor.setActive(true)` e.g.
-        return "RIM_Carriage_Controller";
+        return "carriage";
     }
 
     @Override

@@ -36,6 +36,8 @@ dependencies {
 
 minecraft {
     version = "${config.minecraft.version}-${config.forge.version}"
+    replace "@VERSION@", project.version
+	replace "@BUILD@", project.ext.buildNumber
 }
 
 processResources {

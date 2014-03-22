@@ -13,6 +13,11 @@ buildscript {
 
 apply plugin: 'forge'
 
+if (System.getenv().BUILD_NUMBER != null)
+	ext.buildNumber = System.getenv().BUILD_NUMBER?.toInteger()
+else
+	ext.buildNumber = 0
+
 file "build.properties" withReader {
     def prop = new Properties()
     prop.load(it)

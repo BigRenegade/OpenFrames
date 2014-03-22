@@ -25,11 +25,11 @@ file "build.properties" withReader {
 }
 
 version = "${config.oc.version}"
-group = "redstoneInMotion"
+group = "openframes"
 archivesBaseName = rootProject.name
 
 ext.simpleVersion = version
-version = "MC${config.minecraft.version}-${project.version}"
+version = "MC${config.minecraft.version}-OC-${project.version}-build-${project.ext.buildNumber}"
 
 repositories {
     maven { url = "http://maven.cil.li/" }

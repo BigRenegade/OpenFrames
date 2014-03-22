@@ -9,6 +9,7 @@ import li.cil.oc.api.network.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,7 +124,6 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
 
         try {
             String Direction = (String) Argument;
-
             if (Direction.equalsIgnoreCase("down") || Direction.equalsIgnoreCase("negy")) {
                 return (Directions.NegY);
             }
@@ -148,6 +148,7 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
                 return (Directions.PosX);
             }
         } catch (Throwable Throwable) {
+        	throw(new Exception("Test"));
         }
 
         throw (new Exception("invalid direction"));
@@ -168,6 +169,7 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
                 if (Arguments.length != 3) {
                     throw (new Exception("usage:  move('direction', true/false, true/false)"));
                 }
+                System.out.println(Arguments[0]);
                 SetupMotion(ParseDirectionArgument(Arguments[0]), ParseBooleanArgument(Arguments[1], "simulation"), ParseBooleanArgument(Arguments[2], "anchoring"));
 
                 break;
@@ -346,11 +348,14 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
 
     @Override
     @Optional.Method(modid = "OpenComputers")
-    public Object[] invoke(final String method, final Context context,
-                           final Arguments args) throws Exception {
+    public Object[] invoke(final String method, final Context context, final Arguments args) throws Exception {
         final Object[] arguments = new Object[args.count()];
         for (int i = 0; i < args.count(); ++i) {
-            arguments[i] = args.checkAny(i);
+        	if (args.isString(i)) {
+        		arguments[i] = args.checkString(i);
+        	} else {
+        		arguments[i] = args.checkAny(i);
+        	}
         }
         final Integer methodId = methodIds.get(method);
         if (methodId == null) {
@@ -365,7 +370,7 @@ public class CarriageControllerEntity extends CarriageDriveEntity implements IPe
                     // computer that the command was a success *after* the move.
                     // Possibly by saving a flag in this tile entity's nbt tag,
                     // but I don't know how RiM saves the command block itself.
-//                    context.signal("carriage_moved", true);
+                	// context.signal("carriage_moved", true);
                 }
                 else if (!Obstructed) {
                     context.signal("carriage_moved", false, Error.getMessage());

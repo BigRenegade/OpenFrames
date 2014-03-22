@@ -9,7 +9,6 @@ import li.cil.oc.api.network.Context;
 import li.cil.oc.api.network.ManagedPeripheral;
 import li.cil.oc.api.network.SimpleComponent;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

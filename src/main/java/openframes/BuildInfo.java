@@ -1,12 +1,9 @@
-/**
- * 
- */
 package openframes;
 
 /**
  * This file is automatically updated by Jenkins as part of the CI build script
  * in Ant. Don't put any pre-set values here.
- * @author Caitlyn
+ * @author AfterLifeLochie/Caitlyn
  */
 public class BuildInfo {
 	public static final String modName = "OpenFrames";

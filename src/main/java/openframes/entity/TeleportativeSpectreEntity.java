@@ -9,6 +9,7 @@ import openframes.util.Directions;
 import openframes.util.ModInteraction;
 import openframes.util.TeleportativeSpectreTeleporter;
 import openframes.util.WorldUtil;
+import net.minecraft.world.WorldServer;
 
 public class TeleportativeSpectreEntity extends MotiveSpectreEntity {
     public boolean Source;
@@ -191,9 +192,9 @@ public class TeleportativeSpectreEntity extends MotiveSpectreEntity {
     public net.minecraft.entity.Entity TeleportEntity(net.minecraft.entity.Entity Entity) {
         net.minecraft.server.MinecraftServer Server = cpw.mods.fml.common.FMLCommonHandler.instance().getMinecraftServerInstance();
 
-        net.minecraft.world.WorldServer HomeWorld = (net.minecraft.world.WorldServer) worldObj;
+        WorldServer HomeWorld = (WorldServer) worldObj;
 
-        net.minecraft.world.WorldServer TargetWorld = Server.worldServerForDimension(TargetDimension);
+        WorldServer TargetWorld = Server.worldServerForDimension(TargetDimension);
 
         TeleportativeSpectreTeleporter Teleporter = new TeleportativeSpectreTeleporter(worldObj);
 

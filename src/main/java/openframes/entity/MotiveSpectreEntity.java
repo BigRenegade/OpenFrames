@@ -15,6 +15,7 @@ import openframes.util.Directions;
 import openframes.util.ModInteraction;
 import openframes.util.SneakyWorldUtil;
 import net.minecraft.server.management.PlayerInstance;
+import net.minecraft.world.WorldServer;
 
 public class MotiveSpectreEntity extends TileEntity {
     public Directions MotionDirection;
@@ -182,7 +183,7 @@ public class MotiveSpectreEntity extends TileEntity {
                 Chunk.chunkTileEntityMap = MultipartTilesToPropagate.getValue();
 
                 try {
-                    final PlayerInstance watcher = ((net.minecraft.world.WorldServer) worldObj).getPlayerManager().getOrCreateChunkWatcher(Chunk.xPosition, Chunk.zPosition, false);
+                    final PlayerInstance watcher = ((WorldServer) worldObj).getPlayerManager().getOrCreateChunkWatcher(Chunk.xPosition, Chunk.zPosition, false);
                     final java.util.List<net.minecraft.entity.player.EntityPlayerMP> players = (java.util.List<net.minecraft.entity.player.EntityPlayerMP>) Reflection.EstablishField(PlayerInstance.class, "playersInChunk").get(watcher);
                     for (net.minecraft.entity.player.EntityPlayerMP Player : players) {
                         if (!Player.loadedChunks.contains(Chunk.getChunkCoordIntPair())) {

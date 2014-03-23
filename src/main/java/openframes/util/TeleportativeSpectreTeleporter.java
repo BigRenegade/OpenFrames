@@ -1,8 +1,8 @@
 package openframes.util;
-
+import net.minecraft.world.WorldServer;
 public class TeleportativeSpectreTeleporter extends net.minecraft.world.Teleporter {
     public TeleportativeSpectreTeleporter(net.minecraft.world.World World) {
-        super((net.minecraft.world.WorldServer) World);
+        super((WorldServer) World);
     }
 
     @Override

@@ -2,6 +2,7 @@ package openframes.util;
 
 import openframes.OpenFrames;
 import openframes.core.Reflection;
+import net.minecraft.world.WorldServer;
 
 public abstract class ModInteraction {
     public abstract static class OmniTools {
@@ -89,9 +90,9 @@ public abstract class ModInteraction {
         ForgeMultipart.Establish();
 
         {
-            PendingBlockUpdateSetField = Reflection.EstablishField(net.minecraft.world.WorldServer.class, "tickEntryQueue");
+            PendingBlockUpdateSetField = Reflection.EstablishField(WorldServer.class, "tickEntryQueue");
 
-            RemovePendingBlockUpdate = Reflection.EstablishMethod(net.minecraft.world.WorldServer.class, "removeNextTickIfNeeded", net.minecraft.world.NextTickListEntry.class);
+            RemovePendingBlockUpdate = Reflection.EstablishMethod(WorldServer.class, "removeNextTickIfNeeded", net.minecraft.world.NextTickListEntry.class);
         }
 
         {

@@ -14,13 +14,14 @@ import openframes.entity.CarriageDriveEntity;
 import openframes.entity.CarriageEntity;
 import openframes.util.Directions;
 import openframes.util.ModInteraction;
+import net.minecraft.world.WorldServer;
 
 public class CarriagePackage {
     public BlockPosition RenderCacheKey;
 
     public CarriageTranslocatorEntity Translocator;
 
-    public net.minecraft.world.WorldServer World;
+    public WorldServer World;
 
     public BlockRecord DriveRecord;
 
@@ -31,7 +32,7 @@ public class CarriagePackage {
     public Directions MotionDirection;
 
     public CarriagePackage(CarriageDriveEntity Drive, CarriageEntity Anchor, Directions MotionDirection) {
-        World = (net.minecraft.world.WorldServer) Drive.worldObj;
+        World = (WorldServer) Drive.worldObj;
 
         DriveRecord = new BlockRecord(Drive.xCoord, Drive.yCoord, Drive.zCoord);
 
@@ -214,7 +215,7 @@ public class CarriagePackage {
         long WorldTime = World.getWorldInfo().getWorldTotalTime();
 
         try {
-//          TreeSet treeSet = World.pendingTickListEntriesTreeSet;
+            //TreeSet treeSet = World.getPendingTickListEntriesTreeSet();
             TreeSet treeSet = (TreeSet) Reflection.EstablishField(World.getClass(), "pendingTickListEntriesTreeSet").get(World);
             java.util.Iterator PendingBlockUpdateSetIterator = treeSet.iterator();
 
@@ -224,7 +225,7 @@ public class CarriagePackage {
                 if (Body.contains(new BlockRecord(PendingBlockUpdate.xCoord, PendingBlockUpdate.yCoord, PendingBlockUpdate.zCoord))) {
                     PendingBlockUpdateSetIterator.remove();
 
-//                  Set hashSet = World.pendingTickListEntriesHashSet;
+                    //Set hashSet = World.pendingTickListEntriesHashSet;
                     Set hashSet = (Set) Reflection.EstablishField(World.getClass(), "pendingTickListEntriesHashSet").get(World);
                     hashSet.remove(PendingBlockUpdate);
 

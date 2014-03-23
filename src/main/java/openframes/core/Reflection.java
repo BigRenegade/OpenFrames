@@ -8,7 +8,7 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 
 public abstract class Reflection {
 	
-	
+	//Thanks AfterLifeLochie
 	private static HashMap<String, String> nameRegistry = new HashMap<String, String>();
 	private static void registerMapping(String deob, String ob) {
 		nameRegistry.put(deob, ob);
@@ -19,7 +19,7 @@ public abstract class Reflection {
 		registerMapping("pendingTickListEntriesTreeSet", "field_73065_O");
 		registerMapping("pendingTickListEntriesHashSet", "field_73064_N");
 	}
-	
+	//Made things SO MUCH EASIER.
     public static boolean Verbose = true;
 
     public static Class EstablishClass(String Name) {
